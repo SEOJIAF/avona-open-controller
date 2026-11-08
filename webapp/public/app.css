@@ -1,7 +1,7 @@
 /* Shared look for every page: tokens, layout, controls, the animated water used across the app. */
 
-@property --water { syntax: '<color>'; inherits: true; initial-value: #2f7fe0; }
-@property --water-deep { syntax: '<color>'; inherits: true; initial-value: #173f86; }
+@property --water { syntax: '<color>'; inherits: true; initial-value: #2c6f91; }
+@property --water-deep { syntax: '<color>'; inherits: true; initial-value: #1c465a; }
 @property --glow { syntax: '<color>'; inherits: true; initial-value: transparent; }
 
 :root {
@@ -12,27 +12,26 @@
   --surface-2: #f6f2ec;
   --glass: rgb(255 253 250 / .72);
   --text: #16171b;
-  --muted: #6c6862;
-  --faint: #a8a39b;
+  --muted: #5f5b55;
+  --faint: #77716a;
   --line: rgb(22 23 27 / .08);
   --line-strong: rgb(22 23 27 / .15);
-  --accent: #f0643c;
-  --accent-2: #e8446d;
-  --accent-soft: rgb(240 100 60 / .12);
+  --accent: #b84e2b;
+  --accent-soft: rgb(184 78 43 / .11);
   --ok: #17935b;
   --warn: #c77c00;
   --bad: #d4382a;
   --bad-soft: rgb(212 56 42 / .1);
   --air-top: #fbf8f4;
   --air-bottom: #efe8de;
-  --shadow: 0 1px 2px rgb(40 28 12 / .05), 0 10px 30px -12px rgb(40 28 12 / .16);
-  --shadow-lg: 0 2px 6px rgb(40 28 12 / .05), 0 30px 70px -24px rgb(40 28 12 / .3);
-  --radius: 30px;
-  --radius-md: 20px;
-  --radius-sm: 14px;
+  --shadow: 0 12px 32px -18px rgb(40 28 12 / .18);
+  --shadow-lg: 0 22px 56px -26px rgb(40 28 12 / .26);
+  --radius: 18px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
   --ease: cubic-bezier(.2, .8, .2, 1);
-  --spring: cubic-bezier(.34, 1.5, .64, 1);
-  --font: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --spring: cubic-bezier(.22, 1, .36, 1);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
@@ -43,21 +42,20 @@
     --surface-2: #1c1f26;
     --glass: rgb(21 23 29 / .7);
     --text: #f4f2ee;
-    --muted: #9b978f;
-    --faint: #5f5c57;
+    --muted: #b5b0a8;
+    --faint: #8d8881;
     --line: rgb(255 255 255 / .07);
     --line-strong: rgb(255 255 255 / .14);
-    --accent: #ff7a4a;
-    --accent-2: #ff5585;
-    --accent-soft: rgb(255 122 74 / .14);
+    --accent: #ed9068;
+    --accent-soft: rgb(237 144 104 / .15);
     --ok: #3ddc97;
     --warn: #ffb547;
     --bad: #ff6b5e;
     --bad-soft: rgb(255 107 94 / .12);
     --air-top: #101219;
     --air-bottom: #181b24;
-    --shadow: 0 1px 2px rgb(0 0 0 / .4), 0 12px 32px -12px rgb(0 0 0 / .6);
-    --shadow-lg: 0 2px 6px rgb(0 0 0 / .4), 0 30px 80px -24px rgb(0 0 0 / .8);
+    --shadow: 0 12px 32px -18px rgb(0 0 0 / .6);
+    --shadow-lg: 0 22px 56px -26px rgb(0 0 0 / .8);
   }
 }
 
@@ -94,15 +92,14 @@ code { font-family: var(--mono); font-size: .9em; padding: 1px 6px; border-radiu
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 12px max(16px, env(safe-area-inset-right)) 12px max(16px, env(safe-area-inset-left));
   padding-top: max(12px, env(safe-area-inset-top));
-  background: color-mix(in oklab, var(--bg) 72%, transparent);
-  backdrop-filter: saturate(1.6) blur(18px); -webkit-backdrop-filter: saturate(1.6) blur(18px);
+  background: var(--bg);
   border-bottom: 1px solid transparent;
   transition: border-color .3s;
 }
 .topbar.scrolled { border-bottom-color: var(--line); }
 .topbar-inner { width: 100%; max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 650; letter-spacing: -.02em; font-size: 1.05rem; }
-.brand img, .brand svg { width: 34px; height: 34px; border-radius: 10px; box-shadow: 0 4px 14px -4px rgb(236 90 122 / .55); }
+.brand img, .brand svg { width: 34px; height: 34px; border-radius: 10px; }
 .brand span b { font-weight: 650; color: var(--muted); }
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
 
@@ -118,17 +115,17 @@ code { font-family: var(--mono); font-size: .9em; padding: 1px 6px; border-radiu
 /* ---------- Cards ---------- */
 .card {
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-  padding: clamp(20px, 4vw, 30px); box-shadow: var(--shadow);
+  padding: clamp(20px, 4vw, 30px);
 }
 .card + .card { margin-top: 14px; }
 .card h2 { font-size: 1.3rem; font-weight: 680; margin-bottom: 10px; }
 a.card { display: block; text-decoration: none; transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
-a.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+a.card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
 
 /* ---------- Buttons ---------- */
 .btn {
   position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 52px; padding: 0 22px; border-radius: 999px;
+  min-height: 52px; padding: 0 22px; border-radius: var(--radius-sm);
   border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--text);
   font-weight: 620; text-decoration: none; white-space: nowrap; user-select: none;
   transition: transform .18s var(--ease), background .25s, box-shadow .25s, opacity .2s, border-color .25s, color .25s;
@@ -142,11 +139,13 @@ a.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 .btn-ghost { background: transparent; border-color: transparent; }
 .btn-ghost:hover { background: var(--surface-2); }
 .btn-primary {
-  border: 0; color: #fff;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 10px 24px -10px color-mix(in oklab, var(--accent-2) 80%, transparent), inset 0 1px 0 rgb(255 255 255 / .25);
+  border: 0; color: #fff; background: #c94b2a;
 }
-.btn-primary:hover { background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 90%, #fff), color-mix(in oklab, var(--accent-2) 90%, #fff)); }
+.btn-primary:hover { background: #ad3d21; }
+@media (prefers-color-scheme: dark) {
+  .btn-primary { background: #cf8965; color: #19120f; }
+  .btn-primary:hover { background: #dda07e; }
+}
 .btn-danger { background: var(--bad-soft); border-color: transparent; color: var(--bad); }
 .btn-danger:hover { background: color-mix(in oklab, var(--bad) 18%, transparent); }
 .btn-danger.confirm { background: var(--bad); color: #fff; animation: nudge .4s var(--ease); }
@@ -203,13 +202,13 @@ a.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 .seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; position: relative; padding: 4px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); isolation: isolate; }
 .seg button { position: relative; z-index: 1; border: 0; background: transparent; padding: 8px 16px; min-height: 38px; border-radius: 999px; color: var(--muted); font-weight: 600; transition: color .25s; }
 .seg button[aria-selected=true], .seg button[aria-checked=true] { color: var(--text); }
-.seg .thumb { position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / var(--n, 2)); transform: translateX(calc(var(--i, 0) * 100%)); border-radius: 999px; background: var(--surface); box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 4px 12px -4px rgb(0 0 0 / .15); transition: transform .45s var(--spring), width .45s var(--spring); }
+.seg .thumb { position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / var(--n, 2)); transform: translateX(calc(var(--i, 0) * 100%)); border-radius: 999px; background: var(--surface); box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 4px 12px -4px rgb(0 0 0 / .15); transition: transform .35s var(--spring); }
 @media (prefers-color-scheme: dark) { .seg .thumb { background: #2a2e38; } }
 
 /* ---------- Status pills, chips ---------- */
 .pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 10px; border-radius: 999px; font-size: .82rem; font-weight: 600; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); white-space: nowrap; }
 .pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; }
-.pill.on i { background: var(--ok); box-shadow: 0 0 0 0 color-mix(in oklab, var(--ok) 60%, transparent); animation: ping 2.4s infinite; }
+.pill.on i { background: var(--ok); }
 .pill.off i { background: var(--bad); }
 
 /* ---------- Toasts ---------- */
@@ -229,7 +228,7 @@ a.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 /* ---------- Step flows (setup pages) ---------- */
 .progress { display: flex; gap: 6px; margin: 0 4px 18px; }
 .progress span { flex: 1; height: 5px; border-radius: 99px; background: var(--line-strong); overflow: hidden; position: relative; }
-.progress span::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transform: scaleX(0); transform-origin: left; transition: transform .6s var(--ease); }
+.progress span::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .6s var(--ease); }
 .progress span.done::after { transform: scaleX(1); }
 [data-step]:not([hidden]) { animation: step-in .55s var(--ease) both; }
 .center { text-align: center; }
@@ -262,13 +261,13 @@ a.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 /* Water-in-a-circle loader. */
 .loader {
   position: relative; width: 76px; height: 76px; margin: 6px auto 22px; border-radius: 50%; overflow: hidden;
-  background: var(--surface-2); box-shadow: inset 0 0 0 1.5px var(--line-strong), 0 12px 30px -12px color-mix(in oklab, var(--accent-2) 60%, transparent);
+  background: var(--surface-2); box-shadow: inset 0 0 0 1.5px var(--line-strong);
   isolation: isolate;
 }
 .loader::before, .loader::after {
   content: ''; position: absolute; left: 50%; top: 52%; width: 200%; height: 200%; margin-left: -100%;
   border-radius: 42%; animation: spin 5s linear infinite;
-  background: linear-gradient(135deg, #6d5ce8, #ec5a7a 55%, #f5793b);
+  background: #35677a;
 }
 .loader::after { border-radius: 45%; top: 48%; opacity: .45; animation-duration: 7s; animation-direction: reverse; }
 .loader i { position: absolute; z-index: 1; bottom: 12px; left: 50%; width: 6px; height: 6px; border-radius: 50%; background: rgb(255 255 255 / .85); animation: bubble 1.8s ease-in infinite; }
@@ -284,30 +283,18 @@ a.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 
 /* ---------- Ocean scene (login and empty states) ---------- */
 .sea { position: absolute; left: 0; right: 0; bottom: 0; height: var(--sea-h, 34%); pointer-events: none; overflow: hidden; }
-.sea .layer { position: absolute; left: 0; right: 0; top: var(--top, 0); bottom: 0; display: flex; flex-direction: column; opacity: var(--o, 1); animation: bob var(--bob, 6s) ease-in-out infinite alternate; }
-.sea .layer svg { flex: none; display: block; width: 200%; height: 34px; animation: drift var(--speed, 12s) linear infinite; }
+.sea .layer { position: absolute; left: 0; right: 0; top: var(--top, 0); bottom: 0; display: flex; flex-direction: column; opacity: var(--o, 1); }
+.sea .layer svg { flex: none; display: block; width: 100%; height: 34px; }
 .sea .layer svg path { fill: var(--c); }
 .sea .layer div { flex: 1; margin-top: -1px; background: var(--c); }
 .sea .layer.rev svg { animation-direction: reverse; }
-.sea .bubbles i { position: absolute; bottom: 0; left: var(--x); height: 100%; animation: rise var(--d, 6s) var(--t, 0s) infinite cubic-bezier(.45, 0, .7, 1); }
-.sea .bubbles i::before { content: ''; position: absolute; bottom: 0; left: 0; width: var(--s, 8px); height: var(--s, 8px); border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgb(255 255 255 / .95), rgb(255 255 255 / .3) 55%, rgb(255 255 255 / .1)); animation: sway 1.8s ease-in-out infinite alternate; }
 
 /* ---------- Keyframes ---------- */
 @keyframes spin { to { transform: rotate(360deg); } }
-@keyframes drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes bob { from { transform: translateY(-3px); } to { transform: translateY(4px); } }
-@keyframes rise {
-  0% { transform: translate(0, 0); opacity: 0; }
-  12% { opacity: 1; }
-  80% { opacity: .9; }
-  100% { transform: translate(var(--dx, 0), -100%); opacity: 0; }
-}
-@keyframes sway { from { transform: translateX(-3px); } to { transform: translateX(3px); } }
 @keyframes bubble { 0% { transform: translateY(0) scale(.6); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-48px) scale(1); opacity: 0; } }
 @keyframes step-in { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
 @keyframes toast-in { from { opacity: 0; transform: translateY(20px) scale(.92); } to { opacity: 1; transform: none; } }
 @keyframes toast-out { to { opacity: 0; transform: translateY(10px) scale(.96); } }
-@keyframes ping { 0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--ok) 55%, transparent); } 70%, 100% { box-shadow: 0 0 0 7px transparent; } }
 @keyframes shake { 0%, 100% { transform: none; } 25% { transform: translateX(-5px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); } }
 @keyframes nudge { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
 @keyframes draw { to { stroke-dashoffset: 0; } }

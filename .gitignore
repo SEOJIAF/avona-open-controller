@@ -11,6 +11,7 @@ jadx-out/
 
 # Local secrets and runtime files
 webapp/certs/
+webapp/data/
 .env
 *.log
 node_modules/

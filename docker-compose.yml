@@ -21,8 +21,9 @@ services:
       # ANOVA_WS_LOG: /tmp/ws.log     # debug: log raw cloud messages
       # CLOUD_IDLE_MINUTES: "5"       # disconnect from the cloud after this long unused
       PORT: "8080"
-    # volumes:
-    #   - ./webapp/certs:/certs:ro
+    volumes:
+      - anova-sessions:/app/data
+      # - ./webapp/certs:/certs:ro
 
   # Same server on the host's network, so it can reach a cooker's setup hotspot (10.123.45.1) after you
   # join that Wi-Fi on the host. Start with:  docker compose --profile host-network up -d --build open-avona-host
@@ -35,3 +36,8 @@ services:
     environment:
       HOST: "127.0.0.1"
       PORT: "8080"
+    volumes:
+      - anova-sessions:/app/data
+
+volumes:
+  anova-sessions:

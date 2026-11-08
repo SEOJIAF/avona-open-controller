@@ -3,62 +3,93 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f4f0ea" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0c10" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f8f5ef">
 <title>Sign in · Open Avona</title>
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/app.css">
 <style>
-  body { --glow: rgb(236 90 122 / .18); overflow-x: hidden; }
-  .scene { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
-  .scene .sea { --sea-h: 44%; -webkit-mask-image: linear-gradient(180deg, #000 20%, transparent 96%); mask-image: linear-gradient(180deg, #000 20%, transparent 96%); }
-  .sun {
-    position: absolute; left: 50%; bottom: calc(44% - 120px); width: min(90vw, 560px); aspect-ratio: 1; transform: translateX(-50%);
-    border-radius: 50%; background: radial-gradient(circle, rgb(247 136 62 / .5), rgb(236 90 122 / .22) 42%, transparent 68%);
-    filter: blur(10px); animation: glow 6s ease-in-out infinite alternate;
+  .auth-page {
+    color-scheme: light; --bg: #f8f5ef; --surface: #fff; --surface-2: #f0ede7;
+    --text: #202a2d; --muted: #586365; --faint: #747b7a;
+    --line: #dce0db; --line-strong: #bdc5c0; --accent: #ad4929;
+    --accent-soft: rgb(173 73 41 / .12); --bad: #a62d26;
+    background: var(--bg); color: var(--text);
   }
-  @keyframes glow { from { opacity: .7; transform: translateX(-50%) scale(.96); } to { opacity: 1; transform: translateX(-50%) scale(1.04); } }
-
-  main { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: max(28px, env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom)); }
-  .login { width: 100%; max-width: 420px; animation: fade-up .9s var(--ease) both; }
-  .hello { text-align: center; margin-bottom: 22px; }
-  .hello img { width: 64px; height: 64px; border-radius: 19px; box-shadow: 0 14px 34px -10px rgb(236 90 122 / .7); animation: pop .7s var(--spring) .1s both; }
-  .hello h1 { font-size: clamp(1.8rem, 7vw, 2.3rem); font-weight: 750; margin: 16px 0 6px; }
-  .hello p { color: var(--muted); margin: 0 auto; max-width: 32ch; }
-  .glass { background: var(--glass); backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5); }
-  .seg.tabs { display: grid; width: 100%; margin-bottom: 22px; }
-  .seg.tabs button { min-height: 44px; }
-  #confirm-row:not([hidden]) { animation: step-in .45s var(--ease) both; }
-  .foot { text-align: center; color: var(--muted); font-size: .8rem; margin: 18px 0 0; opacity: .85; }
+  .auth-page::before { display: none; }
+  .auth-shell { display: grid; grid-template-columns: minmax(0, 1fr) minmax(520px, 42%); min-height: 100vh; min-height: 100dvh; }
+  .identity { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; padding: clamp(32px, 4vw, 72px); background: #182d37; color: #f8f5ef; }
+  .brand-lockup { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 14px; width: max-content; font-size: 1.18rem; font-weight: 700; letter-spacing: -.025em; }
+  .brand-lockup img { width: 40px; height: 40px; border: 1px solid rgb(255 255 255 / .25); border-radius: 11px; }
+  .identity-copy { position: relative; z-index: 2; max-width: 700px; margin: auto 0; padding-bottom: 5vh; }
+  .identity-copy h1 { font-size: clamp(3.6rem, 5.7vw, 6rem); font-weight: 680; line-height: 1.04; letter-spacing: -.035em; text-wrap: balance; }
+  .identity-copy p { max-width: 41ch; margin: 26px 0 0; color: #c5d1d1; font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.55; }
+  .identity-bottom { position: relative; z-index: 2; color: #c5d1d1; font-size: .82rem; }
+  .identity .sea { --sea-h: 29%; opacity: .54; }
+  .auth-panel { display: grid; place-items: center; padding: 56px clamp(28px, 5vw, 96px); background: #f8f5ef; }
+  .auth-content { width: min(100%, 440px); }
+  .auth-intro { margin-bottom: 32px; }
+  .auth-intro h2 { font-size: clamp(2rem, 3vw, 2.7rem); font-weight: 690; letter-spacing: -.035em; }
+  .auth-intro p { margin: 12px 0 0; max-width: 38ch; color: var(--muted); line-height: 1.55; }
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 29px; border-bottom: 1px solid var(--line-strong); }
+  .tabs button { min-height: 46px; padding: 0 2px 13px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: transparent; color: var(--muted); font-weight: 620; text-align: left; }
+  .tabs button:hover { color: var(--text); }
+  .tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+  .auth-form .field { gap: 8px; margin-bottom: 19px; }
+  .auth-form .field > span:first-child { color: #354044; font-size: .9rem; font-weight: 630; }
+  .auth-form .input { min-height: 54px; border-color: #bcc5c1; background: #fff; border-radius: 10px; }
+  .auth-form .input::placeholder { color: #747b7a; }
+  .auth-form .input:focus { background: #fff; }
+  .auth-form .reveal { color: #4c5b5b; }
+  .auth-form .err:empty { display: none; }
+  .auth-form .err:not(:empty) { margin: -2px 0 18px; }
+  .auth-form .btn-primary { width: 100%; min-height: 54px; margin-top: 6px; border-radius: 10px; background: #ad4929; color: #fff; box-shadow: none; }
+  .auth-form .btn-primary:hover { background: #923b22; }
+  .auth-content .note { margin-top: 20px; padding: 13px 15px; background: #edece7; color: #4e5b5b; line-height: 1.45; }
+  .auth-content .note::before { color: #7b411f; background: #e7d6c5; }
+  .foot { margin: 26px 0 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+  #confirm-row:not([hidden]) { animation: step-in .35s var(--ease) both; }
+  @media (max-width: 820px) {
+    .auth-shell { display: block; }
+    .identity { min-height: 128px; padding: max(24px, env(safe-area-inset-top)) 24px 44px; }
+    .identity-copy, .identity-bottom { display: none; }
+    .identity .sea { --sea-h: 58%; opacity: .35; }
+    .auth-panel { position: relative; min-height: calc(100dvh - 110px); margin-top: -18px; padding: 38px 24px calc(42px + env(safe-area-inset-bottom)); border-radius: 18px 18px 0 0; }
+    .auth-content { width: min(100%, 440px); }
+    .auth-intro { margin-bottom: 27px; }
+  }
+  @media (max-width: 420px) {
+    .auth-panel { place-items: start center; }
+    .auth-intro h2 { font-size: 2rem; }
+    .tabs { margin-bottom: 23px; }
+    .foot { margin-top: 20px; }
+  }
 </style>
 </head>
-<body>
-<div class="scene" aria-hidden="true">
-  <div class="sun"></div>
-  <div class="sea">
-    <div class="layer rev" style="--c:#5b6cf0;--o:.5;--speed:22s;--bob:7s"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0 17Q75 2 150 17T300 17T450 17T600 17T750 17T900 17T1050 17T1200 17V34H0Z"/></svg><div></div></div>
-    <div class="layer" style="--c:#ec5a7a;--o:.5;--top:22px;--speed:15s;--bob:5.5s"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0 17Q150 0 300 17T600 17T900 17T1200 17V34H0Z"/></svg><div></div></div>
-    <div class="layer rev" style="--c:#f5793b;--o:.55;--top:46px;--speed:11s;--bob:6.5s"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0 17Q50 5 100 17T200 17T300 17T400 17T500 17T600 17T700 17T800 17T900 17T1000 17T1100 17T1200 17V34H0Z"/></svg><div></div></div>
-    <div class="bubbles">
-      <i style="--x:12%;--s:9px;--d:7s"></i><i style="--x:27%;--s:5px;--d:5.5s;--t:-2s"></i><i style="--x:41%;--s:7px;--d:8s;--t:-5s"></i>
-      <i style="--x:58%;--s:4px;--d:6s;--t:-1s"></i><i style="--x:69%;--s:8px;--d:7.5s;--t:-3.5s"></i><i style="--x:84%;--s:6px;--d:6.5s;--t:-4.5s"></i>
+<body class="auth-page">
+<main class="auth-shell">
+  <section class="identity" aria-labelledby="brand-title">
+    <div class="brand-lockup"><img src="/icon.svg" alt=""><span>Open Avona</span></div>
+    <div class="identity-copy">
+      <h1 id="brand-title">Your cooker,<br>in your hands.</h1>
+      <p>Set the temperature, follow the cook, and manage your Anova cooker from this browser.</p>
     </div>
-  </div>
-</div>
-<main>
-  <div class="login">
-    <div class="hello">
-      <img src="/icon.svg" alt="">
-      <h1>Open Avona</h1>
-      <p>Compatible with popular Anova cookers. Sign in with your Anova account.</p>
+    <p class="identity-bottom">An independent, self-hosted controller for Anova cookers.</p>
+    <div class="sea" aria-hidden="true">
+      <div class="layer rev" style="--c:#315d70;--o:.72;--speed:24s;--bob:9s"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0 17Q75 2 150 17T300 17T450 17T600 17T750 17T900 17T1050 17T1200 17V34H0Z"/></svg><div></div></div>
+      <div class="layer" style="--c:#4e8790;--o:.65;--top:23px;--speed:18s;--bob:8s"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0 17Q150 0 300 17T600 17T900 17T1200 17V34H0Z"/></svg><div></div></div>
     </div>
-    <div class="card glass">
-      <div class="seg tabs" role="tablist" style="--n:2">
-        <span class="thumb"></span>
-        <button type="button" role="tab" id="tab-login" aria-selected="true">Sign in</button>
-        <button type="button" role="tab" id="tab-signup" aria-selected="false">Create account</button>
+  </section>
+  <section class="auth-panel" aria-labelledby="auth-heading">
+    <div class="auth-content">
+      <div class="auth-intro">
+        <h2 id="auth-heading">Welcome back</h2>
+        <p id="auth-copy">Sign in with the same Anova Culinary account you use in the app.</p>
       </div>
-      <form id="form" novalidate>
+      <div class="tabs" role="tablist" aria-label="Account action">
+        <button type="button" role="tab" id="tab-login" aria-selected="true" aria-controls="form">Sign in</button>
+        <button type="button" role="tab" id="tab-signup" aria-selected="false" aria-controls="form">Create account</button>
+      </div>
+      <form class="auth-form" id="form" role="tabpanel" aria-labelledby="tab-login" novalidate>
         <label class="field"><span>Email</span><input class="input" name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
         <label class="field"><span>Password</span>
           <span class="input-group"><input class="input" name="password" type="password" autocomplete="current-password" required minlength="6"><button type="button" class="reveal" data-for="password">Show</button></span></label>
@@ -68,9 +99,9 @@
       </form>
       <p class="note" id="mock-note" hidden>Mock mode: nothing is sent to Anova. Demo account: demo@example.com / demo1234.</p>
       <p class="note" id="signup-note" hidden>This creates a real Anova Culinary account. Accounts that use Google, Facebook or Apple sign-in have no password and can't sign in here.</p>
+      <p class="foot">Unofficial and self-hosted. Not affiliated with Anova.</p>
     </div>
-    <p class="foot">Unofficial and self-hosted. Not affiliated with Anova.</p>
-  </div>
+  </section>
 </main>
 <script>
 const form = document.getElementById('form');
@@ -80,17 +111,34 @@ let mode = 'login';
 
 function setMode(m) {
   mode = m;
-  document.getElementById('tab-login').setAttribute('aria-selected', m === 'login');
-  document.getElementById('tab-signup').setAttribute('aria-selected', m === 'signup');
-  document.querySelector('.tabs').style.setProperty('--i', m === 'signup' ? 1 : 0);
+  const loginTab = document.getElementById('tab-login');
+  const signupTab = document.getElementById('tab-signup');
+  loginTab.setAttribute('aria-selected', m === 'login');
+  signupTab.setAttribute('aria-selected', m === 'signup');
+  loginTab.tabIndex = m === 'login' ? 0 : -1;
+  signupTab.tabIndex = m === 'signup' ? 0 : -1;
+  form.setAttribute('aria-labelledby', m === 'login' ? 'tab-login' : 'tab-signup');
+  document.getElementById('auth-heading').textContent = m === 'signup' ? 'Create your account' : 'Welcome back';
+  document.getElementById('auth-copy').textContent = m === 'signup'
+    ? 'Create an Anova Culinary account to connect your cooker.'
+    : 'Sign in with the same Anova Culinary account you use in the app.';
   document.getElementById('confirm-row').hidden = m !== 'signup';
   document.getElementById('signup-note').hidden = m !== 'signup' || isMock;
   form.password.autocomplete = m === 'signup' ? 'new-password' : 'current-password';
+  form.confirm.required = m === 'signup';
   submit.textContent = m === 'signup' ? 'Create account' : 'Sign in';
   err.textContent = '';
 }
 document.getElementById('tab-login').onclick = () => setMode('login');
 document.getElementById('tab-signup').onclick = () => setMode('signup');
+document.querySelector('.tabs').addEventListener('keydown', (e) => {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+  e.preventDefault();
+  const next = e.key === 'Home' ? 'login' : e.key === 'End' ? 'signup'
+    : e.key === 'ArrowLeft' ? 'login' : 'signup';
+  setMode(next);
+  document.getElementById(next === 'login' ? 'tab-login' : 'tab-signup').focus();
+});
 document.querySelector('.reveal').onclick = (e) => {
   const pw = form.password;
   pw.type = pw.type === 'password' ? 'text' : 'password';
@@ -109,12 +157,14 @@ form.addEventListener('submit', async (e) => {
   err.textContent = '';
   const email = form.email.value.trim(), password = form.password.value;
   if (!email || !password) return (err.textContent = 'Enter your email and password.');
+  if (!form.email.checkValidity()) return (err.textContent = 'Enter a valid email address.');
   if (mode === 'signup') {
     if (password.length < 6) return (err.textContent = 'Use at least 6 characters for the password.');
     if (password !== form.confirm.value) return (err.textContent = 'Passwords do not match.');
   }
   submit.disabled = true;
   submit.classList.add('busy');
+  submit.setAttribute('aria-busy', 'true');
   try {
     const r = await fetch(mode === 'signup' ? '/api/signup' : '/api/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
@@ -125,6 +175,7 @@ form.addEventListener('submit', async (e) => {
     err.textContent = e2.message;
     submit.disabled = false;
     submit.classList.remove('busy');
+    submit.removeAttribute('aria-busy');
   }
 });
 </script>

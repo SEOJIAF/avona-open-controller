@@ -14,6 +14,7 @@ import path from 'node:path';
 import { AnovaCloud, AuthError, FirebaseAuth, registerFirebaseTokenWithAnova } from './anova-cloud.mjs';
 import { MockAuth, addCooker, createMockSocket } from './mock-cloud.mjs';
 import { WifiSwitcher, configureCooker, getDeviceId, scanNetworks } from './gen2-setup.mjs';
+import { SessionStore } from './session-store.mjs';
 
 const env = process.env;
 const PORT = Number(env.PORT ?? 8080);
@@ -21,12 +22,22 @@ const HOST = env.HOST ?? '127.0.0.1';
 const MOCK = env.MOCK === '1';
 const TLS = Boolean(env.TLS_CERT && env.TLS_KEY);
 const COOKIE = 'avona_sid';
-const SESSION_IDLE_MS = 7 * 24 * 3600_000;
+const SESSION_IDLE_MS = 30 * 24 * 3600_000;
 const CLOUD_IDLE_MS = Number(env.CLOUD_IDLE_MINUTES ?? 5) * 60_000;
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'public');
+const sessionStore = new SessionStore(env.SESSION_FILE ?? path.join(path.dirname(fileURLToPath(import.meta.url)), 'data', 'sessions.json'));
 
-// sid -> {email, cloud, sse: Set<res>, lastSeen}. In memory only: a restart signs everyone out.
+// sid -> {email, auth, cloud, sse: Set<res>, lastSeen}.
 const sessions = new Map();
+
+function savedSessions() {
+  return [...sessions].map(([sid, s]) => ({
+    sid, email: s.email, uid: s.auth.uid, refreshToken: s.auth.refreshToken, lastSeen: s.lastSeen, mock: MOCK,
+  }));
+}
+
+const persistSessions = () => sessionStore.save(savedSessions());
+const persistInBackground = () => { void persistSessions().catch((e) => console.error(`[anova] saving sessions failed: ${e.message}`)); };
 
 function makeAuth(email, password) {
   return MOCK
@@ -39,11 +50,11 @@ const trace = env.ANOVA_WS_LOG
   ? (email) => (dir, text) => appendFile(env.ANOVA_WS_LOG, `${new Date().toISOString()} ${email} ${dir} ${text}\n`).catch(() => {})
   : () => undefined;
 
-function startSession(email, auth) {
+function startSession(email, auth, { sid = randomBytes(32).toString('base64url'), lastSeen = Date.now() } = {}) {
   const cloud = MOCK
     ? new AnovaCloud({ auth, connectSocket: createMockSocket, trace: trace(email) })
     : new AnovaCloud({ auth, trace: trace(email) });
-  const session = { email, auth, cloud, sse: new Set(), lastSeen: Date.now() };
+  const session = { email, auth, cloud, sse: new Set(), lastSeen };
   const broadcast = (event, data) => {
     const chunk = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
     for (const res of session.sse) res.write(chunk);
@@ -51,9 +62,20 @@ function startSession(email, auth) {
   cloud.on('status', (s) => broadcast('status', { ...s, mock: MOCK }));
   cloud.on('devices', (list) => broadcast('devices', list));
   cloud.on('state', (p) => broadcast('state', p));
-  const sid = randomBytes(32).toString('base64url');
   sessions.set(sid, session);
+  auth.onTokenUpdate = persistInBackground;
   return sid;
+}
+
+function connectSession(sid) {
+  const s = sessions.get(sid);
+  s.cloud.connect().catch((e) => {
+    console.error(`[anova] connect failed for ${s.email}: ${e.message}`);
+    if (e instanceof AuthError) {
+      endSession(sid);
+      persistInBackground();
+    }
+  });
 }
 
 function endSession(sid) {
@@ -65,7 +87,9 @@ function endSession(sid) {
 }
 
 setInterval(() => {
-  for (const [sid, s] of sessions) if (!s.sse.size && Date.now() - s.lastSeen > SESSION_IDLE_MS) endSession(sid);
+  let removed = false;
+  for (const [sid, s] of sessions) if (Date.now() - s.lastSeen > SESSION_IDLE_MS) { endSession(sid); removed = true; }
+  if (removed) persistInBackground();
 }, 3600_000).unref();
 
 // Cookers are off most of the time, so a session only holds a cloud connection while it is being used: the socket
@@ -211,7 +235,16 @@ async function login(req, res, { create }) {
   }
   const old = sidOf(req);
   if (old) endSession(old);
-  setCookie(res, startSession(email.trim(), auth), SESSION_IDLE_MS / 1000);
+  const sid = startSession(email.trim(), auth);
+  try {
+    await persistSessions();
+  } catch (err) {
+    endSession(sid);
+    persistInBackground();
+    return send(res, 500, { ok: false, error: `Could not save your session (${err.message}).` });
+  }
+  connectSession(sid);
+  setCookie(res, sid, SESSION_IDLE_MS / 1000);
   send(res, 200, { ok: true, email: email.trim() });
 }
 
@@ -224,6 +257,7 @@ async function page(res, file) {
 const ASSETS = {
   '/app.css': 'text/css; charset=utf-8',
   '/icon.svg': 'image/svg+xml',
+  '/cooker-state.mjs': 'text/javascript; charset=utf-8',
   '/gen3-ble.js': 'text/javascript; charset=utf-8',
   '/mock-bluetooth.js': 'text/javascript; charset=utf-8',
 };
@@ -232,7 +266,14 @@ const handler = async (req, res) => {
   const url = new URL(req.url, 'http://local');
   try {
     // Public routes.
-    if (req.method === 'GET' && url.pathname === '/login') return await page(res, 'login.html');
+    if (req.method === 'GET' && url.pathname === '/login') {
+      const existing = sessions.get(sidOf(req));
+      if (existing && Date.now() - existing.lastSeen < SESSION_IDLE_MS) {
+        res.writeHead(302, { Location: '/' });
+        return res.end();
+      }
+      return await page(res, 'login.html');
+    }
     if (req.method === 'POST' && url.pathname === '/api/login') return await login(req, res, { create: false });
     if (req.method === 'POST' && url.pathname === '/api/signup') return await login(req, res, { create: true });
     if (req.method === 'GET' && url.pathname === '/api/config') return send(res, 200, { mock: MOCK });
@@ -242,7 +283,12 @@ const handler = async (req, res) => {
     }
 
     const sid = sidOf(req);
-    const session = sid && sessions.get(sid);
+    let session = sid && sessions.get(sid);
+    if (session && Date.now() - session.lastSeen >= SESSION_IDLE_MS) {
+      endSession(sid);
+      await persistSessions();
+      session = null;
+    }
     if (!session) {
       if (req.method === 'GET' && ['/', '/index.html', '/setup', '/setup-wifi'].includes(url.pathname)) {
         res.writeHead(302, { Location: '/login' });
@@ -251,6 +297,8 @@ const handler = async (req, res) => {
       return send(res, 401, { ok: false, error: 'not signed in' });
     }
     session.lastSeen = Date.now();
+    setCookie(res, sid, SESSION_IDLE_MS / 1000);
+    persistInBackground();
     const { cloud } = session;
 
     if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) return await page(res, 'index.html');
@@ -279,6 +327,7 @@ const handler = async (req, res) => {
     }
     if (req.method === 'POST' && url.pathname === '/api/logout') {
       endSession(sid);
+      await persistSessions();
       setCookie(res, '', 0);
       return send(res, 200, { ok: true });
     }
@@ -323,6 +372,17 @@ const server = TLS
   ? https.createServer({ cert: await readFile(env.TLS_CERT), key: await readFile(env.TLS_KEY) }, handler)
   : http.createServer(handler);
 
+for (const record of await sessionStore.load()) {
+  if (!record || !/^[A-Za-z0-9_-]{43}$/.test(record.sid) || typeof record.email !== 'string' ||
+      typeof record.lastSeen !== 'number' || Date.now() - record.lastSeen >= SESSION_IDLE_MS ||
+      record.mock !== MOCK || (!MOCK && (typeof record.refreshToken !== 'string' || !record.refreshToken))) continue;
+  const auth = MOCK
+    ? new MockAuth({ email: record.email })
+    : new FirebaseAuth({ apiKey: env.ANOVA_FIREBASE_API_KEY, email: record.email, refreshToken: record.refreshToken });
+  auth.uid = record.uid;
+  startSession(record.email, auth, { sid: record.sid, lastSeen: record.lastSeen });
+}
+await persistSessions();
 server.listen(PORT, HOST, () => {
   const scheme = TLS ? 'https' : 'http';
   console.log(`open-avona on ${scheme}://${HOST}:${PORT}${MOCK ? ' (MOCK mode, offline)' : ''}`);
