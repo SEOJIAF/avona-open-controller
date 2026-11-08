@@ -104,6 +104,7 @@ export class FirebaseAuth {
 }
 
 // Events emitted: 'status' ({connected}), 'devices' (list), 'state' ({cookerId, type, state}), 'message' (raw).
+// The socket is opened on demand with wake() and closed with sleep(); while awake it reconnects on its own.
 export class AnovaCloud extends EventEmitter {
   // trace(direction, text) receives every raw message in and out, for debugging.
   constructor({ auth, url = DEVICES_WS_URL, platform = 'android', connectSocket = (u) => new WebSocket(u), log = console, trace } = {}) {
@@ -112,7 +113,10 @@ export class AnovaCloud extends EventEmitter {
     this.ws = null;
     this.pending = new Map(); // requestId -> {resolve, reject, timer}
     this.devices = new Map(); // cookerId -> {cookerId, type, name, state, updatedAt}
-    this.stopped = false;
+    this.stopped = true; // not connected and not reconnecting
+    this.listed = false; // the cooker list has arrived on the current socket
+    this.opening = null; // connect() still fetching a token
+    this.retryTimer = null;
   }
 
   get connected() {
@@ -121,12 +125,15 @@ export class AnovaCloud extends EventEmitter {
 
   async connect() {
     this.stopped = false;
+    clearTimeout(this.retryTimer);
     const token = await this.auth.getIdToken();
+    if (this.stopped) return; // sleep() was called while the token was being fetched
     if (this.ws && this.ws.readyState <= 1) {
       // Replace a still-open socket without triggering its reconnect handler.
       this.ws.onclose = null;
       this.ws.close();
     }
+    this.listed = false;
     const url = `${this.url}?token=${encodeURIComponent(token)}&supportedAccessories=APC&platform=${this.platform}`;
     const ws = this.connectSocket(url);
     this.ws = ws;
@@ -147,15 +154,49 @@ export class AnovaCloud extends EventEmitter {
     };
     ws.onclose = (ev) => {
       this.log.info?.(`[anova] websocket closed code=${ev?.code} reason=${ev?.reason ?? ''}`);
+      this.listed = false;
       this.emit('status', { connected: false });
       this.#failPending(new Error('Websocket connection is closed.'));
-      if (!this.stopped) setTimeout(() => this.connect().catch((e) => this.#retryAfter(e)), RECONNECT_DELAY_MS);
+      if (!this.stopped) this.retryTimer = setTimeout(() => this.connect().catch((e) => this.#retryAfter(e)), RECONNECT_DELAY_MS);
     };
     ws.onerror = (ev) => this.log.warn?.(`[anova] websocket error ${ev?.message ?? ''}`);
   }
 
+  // Connects unless already connected or connecting. Resolves once the cooker list has arrived, so commands
+  // know each cooker's type; rejects if the cloud can't be reached within timeoutMs.
+  async wake(timeoutMs = COMMAND_TIMEOUT_MS) {
+    if (this.stopped || !this.ws || this.ws.readyState > 1) {
+      this.opening ??= this.connect().finally(() => (this.opening = null));
+    }
+    await this.opening;
+    if (this.connected && this.listed) return;
+    await new Promise((resolve, reject) => {
+      const check = () => this.connected && this.listed && finish();
+      const finish = (err) => {
+        clearTimeout(timer);
+        this.off('devices', check);
+        if (err) reject(err);
+        else resolve();
+      };
+      // An open socket whose list is late still gets to try the command.
+      const timer = setTimeout(() => finish(this.connected ? null : new Error("Couldn't reach the Anova cloud. Try again in a moment.")), timeoutMs);
+      this.on('devices', check);
+      check();
+    });
+  }
+
+  // Disconnects until the next wake(). Cooker states go stale meanwhile, so they are dropped; names and types stay.
+  sleep() {
+    this.close();
+    for (const d of this.devices.values()) {
+      delete d.state;
+      delete d.updatedAt;
+    }
+  }
+
   close() {
     this.stopped = true;
+    clearTimeout(this.retryTimer);
     this.ws?.close();
   }
 
@@ -168,7 +209,7 @@ export class AnovaCloud extends EventEmitter {
 
   #retryAfter(err) {
     this.log.error?.(`[anova] reconnect failed: ${err.message}`);
-    if (!this.stopped) setTimeout(() => this.connect().catch((e) => this.#retryAfter(e)), RECONNECT_DELAY_MS * 6);
+    if (!this.stopped) this.retryTimer = setTimeout(() => this.connect().catch((e) => this.#retryAfter(e)), RECONNECT_DELAY_MS * 6);
   }
 
   // Same dispatch as APCWebsocket.processMessage: known events -> state, anything else -> command response.
@@ -179,6 +220,7 @@ export class AnovaCloud extends EventEmitter {
       case 'EVENT_APC_WIFI_LIST': {
         const list = Array.isArray(payload) ? payload : (payload?.cookers ?? payload?.devices ?? []);
         for (const d of list) this.#upsert(d.cookerId, { type: d.type, name: d.name });
+        this.listed = true;
         this.emit('devices', this.deviceList());
         break;
       }

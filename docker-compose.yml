@@ -19,6 +19,7 @@ services:
       # TLS_CERT: /certs/server.crt   # serve HTTPS directly (see webapp/tools/make-local-https.sh)
       # TLS_KEY: /certs/server.key
       # ANOVA_WS_LOG: /tmp/ws.log     # debug: log raw cloud messages
+      # CLOUD_IDLE_MINUTES: "5"       # disconnect from the cloud after this long unused
       PORT: "8080"
     # volumes:
     #   - ./webapp/certs:/certs:ro

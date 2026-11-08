@@ -61,7 +61,7 @@ setup, HTTPS for phones, configuration, the HTTP API and troubleshooting.
 ```
 
 - **Accounts:** Firebase email/password auth, as the app does. New accounts are registered with Anova like the app registers them.
-- **Control:** the same WebSocket and the same JSON commands the Android app sends, such as `CMD_APC_START`, `CMD_APC_STOP` and `CMD_APC_SET_TARGET_TEMP`. The cloud pushes `EVENT_APC_STATE` updates.
+- **Control:** the same WebSocket and the same JSON commands the Android app sends, such as `CMD_APC_START`, `CMD_APC_STOP` and `CMD_APC_SET_TARGET_TEMP`. The cloud pushes `EVENT_APC_STATE` updates. The connection is opened only while you use the app and closed again after a few idle minutes.
 - **Setup:** for 2nd‑gen Wi‑Fi cookers, the server joins the cooker's `Anova <code>` hotspot through NetworkManager. It sends your Wi‑Fi credentials and your account ID, then switches your computer back to your Wi‑Fi. For 3.0‑generation cookers, the browser runs the app's Bluetooth handshake, code confirmation, Wi‑Fi and account-linking steps.
 
 ## Development

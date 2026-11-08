@@ -75,6 +75,51 @@ test('refuses commands for unknown cookers', async () => {
   cloud.close();
 });
 
+function idleCloud() {
+  const sockets = [];
+  const cloud = new AnovaCloud({
+    auth: { getIdToken: async () => 'id-token' },
+    connectSocket: () => {
+      sockets.push(fakeSocket());
+      return sockets.at(-1);
+    },
+    log: {},
+  });
+  return { cloud, sockets };
+}
+
+test('stays disconnected until woken, and concurrent wakes share one socket', async () => {
+  const { cloud, sockets } = idleCloud();
+  assert.equal(sockets.length, 0);
+  await Promise.all([cloud.wake(), cloud.wake(), cloud.wake()]);
+  assert.equal(sockets.length, 1);
+  assert.ok(cloud.connected && cloud.listed);
+  await cloud.wake();
+  assert.equal(sockets.length, 1);
+  cloud.close();
+});
+
+test('sleep disconnects for good and forgets stale states until the next wake', async (t) => {
+  const { cloud, sockets } = idleCloud();
+  await cloud.wake();
+  sockets[0].onmessage({ data: JSON.stringify({ command: 'EVENT_APC_STATE', payload: { cookerId: 'cooker-1', type: 'a5', state: { job: {} } } }) });
+  assert.ok(cloud.deviceList()[0].state);
+
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  cloud.sleep();
+  t.mock.timers.tick(10 * 60_000); // well past any reconnect delay
+  await new Promise(setImmediate);
+  assert.equal(sockets.length, 1);
+  assert.equal(cloud.connected, false);
+  assert.deepEqual(cloud.deviceList(), [{ cookerId: 'cooker-1', type: 'a5', name: 'Anova Precision Cooker' }]);
+  t.mock.timers.reset();
+
+  await cloud.wake();
+  assert.equal(sockets.length, 2);
+  assert.ok(cloud.connected);
+  cloud.close();
+});
+
 test('maps Firebase error codes to readable messages', () => {
   assert.equal(new AuthError('INVALID_LOGIN_CREDENTIALS').message, 'Wrong email or password.');
   assert.match(new AuthError('WEAK_PASSWORD : Password should be at least 6 characters').message, /too weak/);

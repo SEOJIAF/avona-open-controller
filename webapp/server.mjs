@@ -4,7 +4,7 @@
 //   node server.mjs            # real Anova accounts: sign in or create one at /login
 //
 // Optional: PORT (8080), HOST (127.0.0.1), TLS_CERT + TLS_KEY (serve HTTPS; see tools/make-local-https.sh),
-// COOKIE_SECURE=1 (when HTTPS is terminated by a reverse proxy).
+// COOKIE_SECURE=1 (when HTTPS is terminated by a reverse proxy), CLOUD_IDLE_MINUTES (5; see below).
 import http from 'node:http';
 import https from 'node:https';
 import { appendFile, readFile } from 'node:fs/promises';
@@ -22,6 +22,7 @@ const MOCK = env.MOCK === '1';
 const TLS = Boolean(env.TLS_CERT && env.TLS_KEY);
 const COOKIE = 'avona_sid';
 const SESSION_IDLE_MS = 7 * 24 * 3600_000;
+const CLOUD_IDLE_MS = Number(env.CLOUD_IDLE_MINUTES ?? 5) * 60_000;
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'public');
 
 // sid -> {email, cloud, sse: Set<res>, lastSeen}. In memory only: a restart signs everyone out.
@@ -50,7 +51,6 @@ function startSession(email, auth) {
   cloud.on('status', (s) => broadcast('status', { ...s, mock: MOCK }));
   cloud.on('devices', (list) => broadcast('devices', list));
   cloud.on('state', (p) => broadcast('state', p));
-  cloud.connect().catch((e) => console.error(`[anova] connect failed for ${email}: ${e.message}`));
   const sid = randomBytes(32).toString('base64url');
   sessions.set(sid, session);
   return sid;
@@ -67,6 +67,22 @@ function endSession(sid) {
 setInterval(() => {
   for (const [sid, s] of sessions) if (!s.sse.size && Date.now() - s.lastSeen > SESSION_IDLE_MS) endSession(sid);
 }, 3600_000).unref();
+
+// Cookers are off most of the time, so a session only holds a cloud connection while it is being used: the socket
+// opens on demand (wakeCloud) and closes after CLOUD_IDLE_MS with no requests and no open event stream.
+setInterval(() => {
+  for (const s of sessions.values()) {
+    if (!s.cloud.stopped && !s.sse.size && Date.now() - s.lastSeen > CLOUD_IDLE_MS) {
+      console.log(`[anova] idle, disconnecting ${s.email}`);
+      s.cloud.sleep();
+    }
+  }
+}, 15_000).unref();
+
+function wakeCloud(session) {
+  session.lastSeen = Date.now();
+  return session.cloud.wake();
+}
 
 function sidOf(req) {
   for (const part of (req.headers.cookie ?? '').split(';')) {
@@ -270,19 +286,30 @@ const handler = async (req, res) => {
       return send(res, 200, { email: session.email, uid: session.auth.uid ?? null, mock: MOCK });
     }
     if (req.method === 'GET' && url.pathname === '/api/status') {
-      return send(res, 200, { connected: cloud.connected, mock: MOCK, devices: cloud.deviceList() });
+      const error = await wakeCloud(session).then(() => undefined, (e) => e.message);
+      return send(res, 200, { connected: cloud.connected, mock: MOCK, error, devices: cloud.deviceList() });
     }
     if (req.method === 'GET' && url.pathname === '/api/events') {
       res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' });
-      res.write(`event: status\ndata: ${JSON.stringify({ connected: cloud.connected, mock: MOCK })}\n\n`);
-      res.write(`event: devices\ndata: ${JSON.stringify(cloud.deviceList())}\n\n`);
+      res.write(`event: status\ndata: ${JSON.stringify({ connected: cloud.connected, connecting: !cloud.connected, mock: MOCK })}\n\n`);
+      // Until the cloud has sent the cooker list, the cached one may be incomplete; the list follows when it arrives.
+      if (cloud.listed) res.write(`event: devices\ndata: ${JSON.stringify(cloud.deviceList())}\n\n`);
       session.sse.add(res);
-      req.on('close', () => session.sse.delete(res));
+      req.on('close', () => {
+        session.sse.delete(res);
+        session.lastSeen = Date.now(); // the idle countdown starts when the last page stops listening
+      });
+      wakeCloud(session).catch((e) => {
+        console.error(`[anova] connect failed for ${session.email}: ${e.message}`);
+        if (session.sse.has(res)) res.write(`event: status\ndata: ${JSON.stringify({ connected: false, error: e.message, mock: MOCK })}\n\n`);
+      });
       return;
     }
     const m = url.pathname.match(/^\/api\/devices\/([\w.-]+)\/(\w+)$/);
     if (req.method === 'POST' && m && Object.hasOwn(actions, m[2])) {
-      const result = await actions[m[2]](cloud, m[1], await readJson(req));
+      const body = await readJson(req);
+      await wakeCloud(session);
+      const result = await actions[m[2]](cloud, m[1], body);
       return send(res, 200, { ok: true, result });
     }
     send(res, 404, { error: 'not found' });

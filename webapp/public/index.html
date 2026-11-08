@@ -184,6 +184,16 @@
   .actions .btn:not([hidden]) { animation: step-in .45s var(--ease) both; }
   .actions .btn svg { width: 20px; height: 20px; }
 
+  /* Shown after the page stopped listening because nobody was using it. */
+  .wake {
+    display: none; position: fixed; z-index: 40; left: 0; right: 0; bottom: calc(18px + env(safe-area-inset-bottom)); width: fit-content; max-width: calc(100% - 32px); margin: 0 auto;
+    align-items: center; gap: 6px; padding: 12px 18px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: var(--shadow-lg);
+    color: var(--muted); font-size: .92rem; font-weight: 560;
+  }
+  .wake b { color: var(--text); }
+  .asleep .wake { display: inline-flex; animation: toast-in .5s var(--spring) both; }
+
   /* ---------- Loading and empty states ---------- */
   .skeleton .stage { background: linear-gradient(100deg, var(--surface-2) 30%, color-mix(in oklab, var(--surface-2) 60%, var(--surface)) 50%, var(--surface-2) 70%) 0 0 / 200% 100%; animation: shimmer 1.6s linear infinite; }
   .skeleton .bar { height: 14px; border-radius: 99px; background: var(--surface-2); }
@@ -239,6 +249,7 @@
     </article>
   </div>
 </main>
+<button class="wake" type="button">Paused while idle · <b>Tap to reconnect</b></button>
 <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
 <template id="tpl-empty">
@@ -440,7 +451,12 @@ function view(d) {
 }
 
 function statusOf(d, v) {
-  if (!d.state) return ['wait', 'Waiting for the cooker'];
+  if (!d.state || d.stale) {
+    if (!listening) return ['wait', 'Paused'];
+    if (!cloudSince) return ['wait', 'Connecting'];
+    // A switched-off cooker sends nothing, so after a while without news say so instead of waiting forever.
+    return Date.now() - cloudSince > 10_000 ? ['off', 'Off or offline'] : ['wait', 'Waiting for the cooker'];
+  }
   if (v.online === false) return ['off', 'Offline'];
   if (v.alert) return ['alert', v.alert];
   if (v.done) return ['done', 'Timer done'];
@@ -534,7 +550,7 @@ function ensureCard(d) {
     r: {
       stage: q('.stage'), status: q('.status-text'), warn: q('.warn-pill'), now: q('.now-val'), nowUnit: q('.now-unit'),
       chipTarget: q('.chip-target'), targetText: q('.target-text'), chipTimer: q('.chip-timer'), timerText: q('.timer-text'),
-      lcd: q('.lcd'), name: q('.name'), meta: q('.meta'), seg: q('.seg'), input: q('.temp-input'), u: q('.temp-val .u'),
+      label: q('.readout .label'), lcd: q('.lcd'), name: q('.name'), meta: q('.meta'), seg: q('.seg'), input: q('.temp-input'), u: q('.temp-val .u'),
       range: q('.range'), presets: q('.presets'), timerVal: q('.timer-val'),
       go: q('.go'), apply: q('.apply'), stop: q('.stop'),
     },
@@ -656,7 +672,8 @@ function update(c) {
   el.dataset.status = key;
   el.dataset.mode = v.cooking && v.online !== false ? 'cook' : 'idle';
   el.toggleAttribute('data-low', Boolean(v.lowWater));
-  el.toggleAttribute('data-dim', !d.state || v.online === false);
+  el.toggleAttribute('data-dim', !d.state || d.stale || v.online === false);
+  r.label.textContent = d.stale ? 'Last reading' : 'Water';
   r.status.textContent = text;
   r.warn.hidden = !v.lowWater || key === 'alert';
 
@@ -677,7 +694,7 @@ function update(c) {
   r.stage.style.setProperty('--p', t ? Math.min(1, Math.max(0, 1 - t.left / t.total)).toFixed(4) : 0);
 
   r.name.textContent = d.name || d.cookerId;
-  r.meta.textContent = [MODELS[d.type] ?? d.type, d.state ? null : 'no status from the cloud yet'].filter(Boolean).join(' · ');
+  r.meta.textContent = MODELS[d.type] ?? d.type ?? '';
   paint(c);
 }
 
@@ -746,24 +763,76 @@ $('#logout').addEventListener('click', async () => {
 });
 addEventListener('scroll', () => $('#topbar').classList.toggle('scrolled', scrollY > 4), { passive: true });
 
-const es = new EventSource('/api/events');
-es.onerror = () => fetch('/api/me').then((r) => { if (r.status === 401) location.replace('/login'); });
-es.addEventListener('status', (e) => {
-  const s = JSON.parse(e.data), pill = $('#conn');
-  // Once connected, the cloud sends the account's cooker list right away; an empty list after that means none.
-  if (s.connected) setTimeout(() => { listLoaded = true; render(); }, 1500);
-  $('span', pill).textContent = (s.connected ? 'Live' : 'Offline') + (s.mock ? ' · demo' : '');
-  pill.className = 'pill ' + (s.connected ? 'on' : 'off');
-});
-es.addEventListener('devices', (e) => {
-  for (const d of JSON.parse(e.data)) devices.set(d.cookerId, { ...devices.get(d.cookerId), ...d });
+// The server only holds its cloud connection while a page listens, so stop listening when nobody is looking:
+// shortly after the tab is hidden, or after a long idle stretch while nothing is cooking. Any tap resumes.
+const HIDDEN_MS = 30_000, IDLE_MS = 10 * 60_000;
+let es = null, listening = false, cloudSince = 0, mock = false, lastInput = Date.now(), hiddenTimer;
+
+function setPill(text, cls) {
+  const pill = $('#conn');
+  $('span', pill).textContent = text + (mock ? ' · demo' : '');
+  pill.className = 'pill ' + cls;
+}
+
+function listen() {
+  if (es) return;
+  listening = true;
+  document.body.classList.remove('asleep');
+  setPill('Connecting', '');
+  es = new EventSource('/api/events');
+  es.onerror = () => {
+    cloudSince = 0;
+    setPill('Offline', 'off');
+    fetch('/api/me').then((r) => { if (r.status === 401) location.replace('/login'); });
+  };
+  es.addEventListener('status', (e) => {
+    const s = JSON.parse(e.data);
+    mock = s.mock;
+    cloudSince = s.connected ? cloudSince || Date.now() : 0;
+    // Once connected, the cloud sends the account's cooker list right away; an empty list after that means none.
+    if (s.connected) setTimeout(() => { listLoaded = true; render(); }, 1500);
+    setPill(s.connected ? 'Live' : s.connecting ? 'Connecting' : 'Offline', s.connected ? 'on' : s.connecting ? '' : 'off');
+    render();
+  });
+  es.addEventListener('devices', (e) => {
+    for (const d of JSON.parse(e.data)) {
+      const cur = devices.get(d.cookerId);
+      devices.set(d.cookerId, d.state ? { ...cur, ...d, stale: false, receivedAt: Date.now() } : { ...cur, ...d });
+    }
+    render();
+  });
+  es.addEventListener('state', (e) => {
+    const p = JSON.parse(e.data);
+    devices.set(p.cookerId, { ...devices.get(p.cookerId), cookerId: p.cookerId, type: p.type, state: p.state, stale: false, receivedAt: Date.now() });
+    render();
+  });
+}
+
+function unlisten() {
+  if (!es) return;
+  es.close();
+  es = null;
+  listening = false;
+  cloudSince = 0;
+  for (const d of devices.values()) d.stale = true;
+  document.body.classList.add('asleep');
+  setPill('Paused', '');
   render();
+}
+
+document.addEventListener('visibilitychange', () => {
+  clearTimeout(hiddenTimer);
+  if (document.hidden) hiddenTimer = setTimeout(unlisten, HIDDEN_MS);
+  else { lastInput = Date.now(); listen(); }
 });
-es.addEventListener('state', (e) => {
-  const p = JSON.parse(e.data);
-  devices.set(p.cookerId, { ...devices.get(p.cookerId), cookerId: p.cookerId, type: p.type, state: p.state, receivedAt: Date.now() });
-  render();
-});
+for (const t of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {
+  addEventListener(t, () => { lastInput = Date.now(); if (!document.hidden) listen(); }, { capture: true, passive: true });
+}
+setInterval(() => {
+  const cooking = [...cards.values()].some((c) => c.v?.cooking && !devices.get(c.id).stale);
+  if (!cooking && Date.now() - lastInput > IDLE_MS) unlisten();
+}, 15_000);
+listen();
 setInterval(render, 1000);
 </script>
 </body>
