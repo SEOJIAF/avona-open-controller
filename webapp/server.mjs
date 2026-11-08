@@ -204,8 +204,13 @@ async function page(res, file) {
   res.end(await readFile(path.join(PUBLIC_DIR, file)));
 }
 
-// Browser modules for the Bluetooth setup flow (explicit list, no directory serving).
-const SCRIPTS = new Set(['/gen3-ble.js', '/mock-bluetooth.js']);
+// Static files: the shared stylesheet and icon, and the Bluetooth setup modules (explicit list, no directory serving).
+const ASSETS = {
+  '/app.css': 'text/css; charset=utf-8',
+  '/icon.svg': 'image/svg+xml',
+  '/gen3-ble.js': 'text/javascript; charset=utf-8',
+  '/mock-bluetooth.js': 'text/javascript; charset=utf-8',
+};
 
 const handler = async (req, res) => {
   const url = new URL(req.url, 'http://local');
@@ -215,8 +220,8 @@ const handler = async (req, res) => {
     if (req.method === 'POST' && url.pathname === '/api/login') return await login(req, res, { create: false });
     if (req.method === 'POST' && url.pathname === '/api/signup') return await login(req, res, { create: true });
     if (req.method === 'GET' && url.pathname === '/api/config') return send(res, 200, { mock: MOCK });
-    if (req.method === 'GET' && SCRIPTS.has(url.pathname)) {
-      res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' });
+    if (req.method === 'GET' && Object.hasOwn(ASSETS, url.pathname)) {
+      res.writeHead(200, { 'Content-Type': ASSETS[url.pathname] });
       return res.end(await readFile(path.join(PUBLIC_DIR, url.pathname.slice(1))));
     }
 

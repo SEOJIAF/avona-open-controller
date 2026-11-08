@@ -2,91 +2,399 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f0ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0c10" media="(prefers-color-scheme: dark)">
 <title>Open Avona</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/app.css">
 <style>
-  :root {
-    --bg: #f6f4f0; --card: #ffffff; --text: #1d1d1b; --muted: #6b6860; --line: #e2ded6;
-    --accent: #d2491f; --accent-text: #ffffff; --ok: #2e7d4f; --bad: #b3261e;
+  @property --level { syntax: '<percentage>'; inherits: true; initial-value: 46%; }
+  @property --steam { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+  .wrap { padding-top: 4px; }
+  #devices { display: grid; gap: 20px; }
+
+  /* ---------- Account menu ---------- */
+  .account { position: relative; }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%; border: 0; color: #fff; font-weight: 700; font-size: .95rem;
+    background: linear-gradient(135deg, #5b6cf0, #ec5a7a 60%, #f7883e);
+    box-shadow: 0 6px 16px -6px rgb(236 90 122 / .7); transition: transform .2s var(--ease);
   }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #161513; --card: #22201d; --text: #f2efe9; --muted: #a29d93; --line: #36332e;
-            --accent: #ff7a4d; --accent-text: #1a0d07; --ok: #6fcf97; --bad: #ff8a80; }
+  .avatar:active { transform: scale(.92); }
+  .menu {
+    position: absolute; right: 0; top: calc(100% + 10px); width: min(280px, calc(100vw - 32px)); padding: 8px;
+    border-radius: 22px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-lg);
+    transform-origin: top right; animation: menu-in .35s var(--spring) both;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-         font: 16px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; }
-  header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 20px; }
-  h1 { font-size: 1.4rem; margin: 0; }
-  .pill { font-size: .8rem; padding: 3px 10px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); }
-  .pill.on { color: var(--ok); border-color: var(--ok); }
-  .pill.off { color: var(--bad); border-color: var(--bad); }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
-  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-  .name { font-weight: 600; }
-  .muted { color: var(--muted); font-size: .9rem; }
-  .temps { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 18px 0; }
-  .big { font-size: 2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .label { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; }
-  label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); }
-  input, select { width: 100%; padding: 9px 10px; border-radius: 8px; border: 1px solid var(--line);
-                  background: var(--bg); color: var(--text); font: inherit; }
-  button { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg);
-           color: var(--text); font: inherit; cursor: pointer; }
-  button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
-  button:disabled { opacity: .5; cursor: default; }
-  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-  .actions select { width: auto; }
-  .account { margin: -8px 0 18px; align-items: center; }
-  .account button { padding: 6px 12px; font-size: .85rem; }
-  .add { color: var(--accent); font-size: .9rem; margin-right: 8px; font-weight: 600; text-decoration: none; }
-  .msg { min-height: 1.2em; font-size: .85rem; margin-top: 10px; }
-  .msg.err { color: var(--bad); }
-  @media (max-width: 480px) {
-    .temps { grid-template-columns: 1fr 1fr; }
-    form { grid-template-columns: 1fr 1fr; }
-    form button { grid-column: span 2; }
+  .menu-who { display: grid; gap: 2px; padding: 10px 12px 14px; margin-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .menu-who b { font-weight: 620; overflow-wrap: anywhere; }
+  .menu-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px; border: 0; border-radius: 14px; background: transparent; text-decoration: none; font-weight: 580; text-align: left; }
+  .menu-item:hover { background: var(--surface-2); }
+  .menu-item.danger { color: var(--bad); }
+  .menu-item svg { width: 18px; height: 18px; opacity: .8; }
+  @keyframes menu-in { from { opacity: 0; transform: scale(.9) translateY(-6px); } to { opacity: 1; transform: none; } }
+  .add-btn svg { width: 18px; height: 18px; }
+  @media (max-width: 560px) { .add-btn span { display: none; } .add-btn { width: 40px; padding: 0; } }
+  @media (max-width: 420px) { #conn span { display: none; } #conn { padding: 9px; } }
+  @media (max-width: 340px) { .brand span b { display: none; } }
+
+  /* ---------- Cooker card ---------- */
+  .cooker {
+    display: grid; overflow: hidden; border-radius: 34px;
+    background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-lg);
+    animation: fade-up .8s var(--ease) both;
   }
+  @media (min-width: 900px) { .cooker { grid-template-columns: minmax(0, 1.15fr) minmax(360px, 1fr); } }
+
+  /* The water bath. Layers back to front: air, steam, back water, cooker, front water, bubbles, light, labels. */
+  .stage {
+    --level: 46%;
+    --dev-x: 79%;
+    --steam-c: rgb(255 255 255 / .55);
+    position: relative; overflow: hidden; isolation: isolate;
+    height: clamp(300px, 88vw, 430px);
+    background: linear-gradient(180deg, var(--air-top) 0%, color-mix(in oklab, var(--water) 26%, var(--air-bottom)) 60%);
+    transition: --water 2.4s ease, --water-deep 2.4s ease, --level 1.6s var(--ease), --steam 3s ease, filter 1s ease;
+  }
+  @media (prefers-color-scheme: light) { .stage { --steam-c: color-mix(in oklab, var(--water) 10%, rgb(255 255 255 / .95)); } }
+  @media (min-width: 900px) { .stage { height: auto; min-height: 560px; } }
+  .cooker[data-low] .stage { --level: 57%; }
+  .cooker[data-dim] .stage { filter: saturate(.25) brightness(.96); }
+  .cooker[data-dim] .stage *, .cooker.paused .stage * { animation-play-state: paused !important; }
+
+  .water { position: absolute; inset: 0; transform: translateY(var(--level)); pointer-events: none; }
+  .water .surf { position: absolute; left: 0; right: 0; top: 0; bottom: -60px; display: flex; flex-direction: column; animation: bob 5.5s ease-in-out infinite alternate; }
+  .water .wave { flex: none; display: block; width: 200%; height: 30px; animation: drift 12s linear infinite; }
+  .water .wave path { fill: var(--c); }
+  .water .wave .glint { fill: none; stroke: rgb(255 255 255 / .45); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .water .body { flex: 1; margin-top: -1px; background: linear-gradient(180deg, var(--c), color-mix(in oklab, var(--c) 72%, #060818)); }
+  .water.back { --c: var(--water-deep); }
+  .water.back .surf { top: -13px; animation-duration: 7s; animation-direction: alternate-reverse; }
+  .water.back .wave { animation-duration: 19s; animation-direction: reverse; }
+  .water.front { --c: var(--water); opacity: .66; }
+
+  .rays { position: absolute; inset: 0; transform: translateY(var(--level)); pointer-events: none; overflow: hidden; }
+  .rays i { position: absolute; top: 6px; width: 16%; height: 75%; background: linear-gradient(180deg, rgb(255 255 255 / .22), transparent 80%); transform: skewX(-14deg); filter: blur(7px); animation: ray 8s ease-in-out infinite alternate; }
+  .rays i:nth-child(1) { left: 8%; }
+  .rays i:nth-child(2) { left: 30%; width: 9%; animation-delay: -3s; animation-duration: 6s; }
+  .rays i:nth-child(3) { left: 50%; width: 12%; animation-delay: -5s; }
+  @keyframes ray { from { opacity: .25; transform: skewX(-14deg) translateX(-8px); } to { opacity: .9; transform: skewX(-10deg) translateX(10px); } }
+
+  .device {
+    position: absolute; left: var(--dev-x); top: 5%; height: 86%; aspect-ratio: 64 / 320; width: auto;
+    transform: translateX(-50%); filter: drop-shadow(0 20px 22px rgb(0 0 0 / .28));
+  }
+  .device .lcd { font: 600 12.5px/1 var(--mono); letter-spacing: .3px; fill: #737a84; transition: fill 1s; }
+  .device .ring { fill: #3a3e46; transition: fill 1s; }
+  .cooker[data-mode=cook] .device .lcd { fill: color-mix(in oklab, var(--water) 45%, #fff); }
+  .cooker[data-mode=cook] .device .ring { fill: color-mix(in oklab, var(--water) 70%, #fff); }
+  .cooker[data-status=heat] .device .ring { animation: breathe 1.8s ease-in-out infinite alternate; }
+  @keyframes breathe { from { opacity: .45; } to { opacity: 1; } }
+
+  .bubbles { position: absolute; left: 0; right: 0; top: calc(var(--level) + 22px); bottom: 11%; pointer-events: none; opacity: 0; transition: opacity 1.2s; }
+  .cooker[data-mode=cook] .bubbles { opacity: .9; }
+  .bubbles i { position: absolute; bottom: 0; left: calc(var(--dev-x) + var(--x)); height: 100%; animation: rise var(--d) var(--t) infinite cubic-bezier(.45, 0, .7, 1); }
+  .bubbles i::before { content: ''; position: absolute; bottom: 0; left: 0; width: var(--s); height: var(--s); border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgb(255 255 255 / .95), rgb(255 255 255 / .3) 55%, rgb(255 255 255 / .08)); box-shadow: 0 0 0 .5px rgb(255 255 255 / .3); animation: sway 1.6s ease-in-out infinite alternate; }
+  .bubbles i.extra { display: none; }
+  .cooker[data-status=heat] .bubbles i.extra { display: block; }
+
+  .steam { position: absolute; left: 0; right: 0; top: 0; height: var(--level); pointer-events: none; opacity: var(--steam); }
+  .steam i { position: absolute; bottom: -14px; left: var(--x); width: clamp(70px, 18%, 120px); height: 78%; border-radius: 50%; background: radial-gradient(50% 50% at 50% 62%, var(--steam-c), transparent 72%); filter: blur(10px); transform-origin: 50% 100%; animation: steam var(--d, 7s) var(--t, 0s) infinite ease-out; }
+  @keyframes steam { 0% { transform: translateY(18%) scale(.45, .35); opacity: 0; } 30% { opacity: 1; } 100% { transform: translate(var(--dx, 18px), -38%) scale(1.35, 1.1); opacity: 0; } }
+
+  .stage-top { position: absolute; z-index: 3; top: 16px; left: 16px; right: 30%; display: flex; flex-wrap: wrap; gap: 8px; }
+  .status { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 11px; border-radius: 999px; font-size: .85rem; font-weight: 620; background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 4px 14px -6px rgb(0 0 0 / .2); }
+  .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); transition: background .4s; }
+  .cooker[data-status=heat] .status i { background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+  .cooker[data-status=cook] .status i, .cooker[data-status=done] .status i { background: var(--ok); animation: pulse 2.4s ease-in-out infinite; }
+  .cooker[data-status=cool] .status i { background: #5b9cf0; }
+  .cooker[data-status=alert] .status i { background: var(--bad); animation: pulse .8s ease-in-out infinite; }
+  .cooker[data-status=wait] .status i { animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(.6); opacity: .55; } }
+  .warn-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 999px; font-size: .85rem; font-weight: 650; color: #fff; background: var(--bad); box-shadow: 0 6px 18px -6px var(--bad); animation: pop .5s var(--spring) both; }
+
+  .readout { position: absolute; z-index: 3; left: clamp(20px, 5vw, 34px); bottom: clamp(18px, 4.5vw, 32px); right: 32%; color: #fff; text-shadow: 0 2px 24px rgb(0 0 0 / .18); }
+  .readout .label { color: rgb(255 255 255 / .75); font-size: .78rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
+  .now { display: flex; align-items: flex-start; margin-top: 2px; font-weight: 250; font-size: clamp(62px, 18vw, 116px); line-height: .92; letter-spacing: -.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .now-unit { font-size: .3em; font-weight: 560; letter-spacing: 0; margin: .28em 0 0 .14em; opacity: .85; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .chips span { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; font-size: .85rem; font-weight: 600; background: rgb(255 255 255 / .17); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); white-space: nowrap; text-shadow: none; }
+  .chips svg { width: 14px; height: 14px; }
+  .tbar { position: absolute; z-index: 3; left: 0; bottom: 0; width: 100%; height: 4px; background: rgb(255 255 255 / .85); transform-origin: left; transform: scaleX(var(--p, 0)); transition: transform 1s linear, opacity .6s; opacity: 0; }
+  .cooker[data-timer] .tbar { opacity: 1; }
+
+  /* ---------- Controls ---------- */
+  .panel { display: flex; flex-direction: column; gap: 22px; padding: clamp(20px, 4.5vw, 34px); }
+  .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+  .panel-head h2 { font-size: clamp(1.2rem, 4vw, 1.45rem); font-weight: 700; overflow-wrap: anywhere; }
+  .panel-head .meta { margin: 4px 0 0; font-size: .88rem; color: var(--muted); }
+  .seg.unit button { padding: 6px 14px; min-height: 36px; }
+  .group { display: grid; gap: 12px; }
+  .group-label { display: flex; justify-content: space-between; align-items: center; font-size: .82rem; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .edited { font-size: .78rem; letter-spacing: 0; text-transform: none; color: var(--accent); font-weight: 650; opacity: 0; transform: translateX(6px); transition: opacity .3s, transform .3s var(--ease); }
+  .cooker.dirty .edited { opacity: 1; transform: none; }
+
+  .temp-ctl { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; }
+  .round {
+    width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+    border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--text);
+    touch-action: manipulation; user-select: none; -webkit-user-select: none;
+    transition: transform .16s var(--ease), background .2s, border-color .2s;
+  }
+  .round svg { width: 22px; height: 22px; }
+  .round:hover { border-color: var(--faint); }
+  .round:active { transform: scale(.9); background: var(--accent-soft); border-color: var(--accent); }
+  .round.sm { width: 46px; height: 46px; }
+  .round.sm svg { width: 18px; height: 18px; }
+  .temp-val { display: flex; align-items: baseline; justify-content: center; min-width: 0; }
+  .temp-val input {
+    width: 4.4ch; min-width: 0; padding: 0; border: 0; border-radius: 12px; background: transparent; outline: none;
+    text-align: center; font-size: clamp(46px, 13vw, 60px); font-weight: 300; letter-spacing: -.045em; font-variant-numeric: tabular-nums;
+    transition: color .3s, background .2s;
+  }
+  .temp-val input:focus { background: var(--surface-2); }
+  .cooker[data-mode=cook].dirty .temp-val input { color: var(--accent); }
+  .temp-val .u { font-size: 1.2rem; font-weight: 600; color: var(--muted); margin-left: 2px; }
+
+  .range { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 34px; margin: 0; background: transparent; cursor: pointer; touch-action: pan-y; }
+  .range::-webkit-slider-runnable-track { height: 10px; border-radius: 99px; background: var(--track); box-shadow: inset 0 1px 2px rgb(0 0 0 / .15); }
+  .range::-moz-range-track { height: 10px; border-radius: 99px; background: var(--track); box-shadow: inset 0 1px 2px rgb(0 0 0 / .15); }
+  .range::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; margin-top: -10px; border-radius: 50%; border: 0; background: #fff; box-shadow: 0 0 0 5px var(--thumb), 0 6px 14px rgb(0 0 0 / .3); transition: transform .25s var(--spring); }
+  .range::-moz-range-thumb { width: 30px; height: 30px; border-radius: 50%; border: 0; background: #fff; box-shadow: 0 0 0 5px var(--thumb), 0 6px 14px rgb(0 0 0 / .3); transition: transform .25s var(--spring); }
+  .range:active::-webkit-slider-thumb { transform: scale(1.18); }
+  .range:active::-moz-range-thumb { transform: scale(1.18); }
+
+  .presets { display: flex; gap: 8px; overflow-x: auto; margin: -2px -4px 0; padding: 4px 24px 4px 4px; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+  .presets::-webkit-scrollbar { display: none; }
+  .chip { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 14px 0 11px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; font-size: .88rem; font-weight: 600; transition: background .25s, border-color .25s, transform .16s var(--ease); }
+  .chip:active { transform: scale(.95); }
+  .chip i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px color-mix(in oklab, var(--c) 22%, transparent); }
+  .chip small { color: var(--muted); font-size: .82rem; font-weight: 560; font-variant-numeric: tabular-nums; }
+  .chip[aria-pressed=true] { border-color: var(--c); background: color-mix(in oklab, var(--c) 13%, transparent); }
+
+  .timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 14px 14px 18px; border-radius: 22px; background: var(--surface-2); border: 1px solid var(--line); }
+  .mini-stepper { display: flex; align-items: center; gap: 6px; }
+  .mini-stepper .round { background: var(--surface); }
+  .mini-stepper output { min-width: 6.4em; text-align: center; font-weight: 650; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+
+  .actions { display: flex; gap: 10px; margin-top: auto; }
+  .actions .btn { flex: 1; min-height: 58px; font-size: 1.05rem; }
+  .actions .btn:not([hidden]) { animation: step-in .45s var(--ease) both; }
+  .actions .btn svg { width: 20px; height: 20px; }
+
+  /* ---------- Loading and empty states ---------- */
+  .skeleton .stage { background: linear-gradient(100deg, var(--surface-2) 30%, color-mix(in oklab, var(--surface-2) 60%, var(--surface)) 50%, var(--surface-2) 70%) 0 0 / 200% 100%; animation: shimmer 1.6s linear infinite; }
+  .skeleton .bar { height: 14px; border-radius: 99px; background: var(--surface-2); }
+  .skeleton .bar.lg { height: 56px; border-radius: 99px; }
+  .empty { position: relative; overflow: hidden; text-align: center; padding: clamp(36px, 8vw, 64px) 24px clamp(150px, 26vw, 200px); border-radius: 34px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-lg); animation: fade-up .8s var(--ease) both; }
+  .empty h2 { font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 720; margin-bottom: 8px; }
+  .empty p { color: var(--muted); max-width: 38ch; margin: 0 auto 22px; }
+  .empty .sea { --sea-h: clamp(110px, 20vw, 150px); }
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <h1>Open Avona</h1>
-    <span id="conn" class="pill">connecting…</span>
-  </header>
-  <div class="row account"><span class="muted" id="who"></span>
-    <span><a class="add" href="/setup">+ Add a cooker</a> <button id="logout" type="button">Sign out</button></span></div>
-  <div id="devices"><div class="card muted" id="empty">Loading your cookers…</div></div>
-</main>
-<template id="tpl">
-  <div class="card">
-    <div class="row"><span class="name"></span><span class="muted meta"></span></div>
-    <div class="temps">
-      <div><div class="label">Water</div><div class="big current">–</div></div>
-      <div><div class="label">Target</div><div class="big target">–</div></div>
-      <div><div class="label">Timer</div><div class="big timer">–</div></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="dv-body" x1="0" x2="1">
+      <stop offset="0" stop-color="#16181c"/><stop offset=".32" stop-color="#3b3f47"/><stop offset=".58" stop-color="#2a2d33"/><stop offset="1" stop-color="#121317"/>
+    </linearGradient>
+    <linearGradient id="dv-head" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#454a53"/><stop offset=".6" stop-color="#25282e"/><stop offset="1" stop-color="#17181c"/>
+    </linearGradient>
+    <linearGradient id="dv-steel" x1="0" x2="1">
+      <stop offset="0" stop-color="#717982"/><stop offset=".28" stop-color="#e8ecef"/><stop offset=".5" stop-color="#b3bac1"/><stop offset=".75" stop-color="#d9dde1"/><stop offset="1" stop-color="#646c74"/>
+    </linearGradient>
+    <filter id="dv-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+</svg>
+
+<header class="topbar" id="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/"><img src="/icon.svg" alt=""><span><b>Open</b> Avona</span></a>
+    <div class="topbar-actions">
+      <span id="conn" class="pill" title="Connection to the Anova cloud"><i></i><span>Connecting</span></span>
+      <a class="btn btn-sm add-btn" href="/setup" aria-label="Add a cooker">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>Add cooker</span></a>
+      <div class="account">
+        <button class="avatar" id="account" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Account">·</button>
+        <div class="menu" id="menu" hidden>
+          <div class="menu-who"><span class="small muted">Signed in as</span><b id="who">…</b></div>
+          <a class="menu-item" href="/setup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add a cooker</a>
+          <button class="menu-item danger" id="logout" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg>Sign out</button>
+        </div>
+      </div>
     </div>
-    <form>
-      <label>Target temp <input name="temp" type="number" step="0.5" required></label>
-      <label>Timer (min, 0 = none) <input name="timer" type="number" min="0" step="1" value="0"></label>
-      <button class="primary" type="submit">Start</button>
-    </form>
-    <div class="actions">
-      <button data-act="temperature">Update temp</button>
-      <button data-act="timer">Update timer</button>
-      <button data-act="stop">Stop</button>
-      <select data-act="unit" aria-label="Unit"><option value="C">°C</option><option value="F">°F</option></select>
-    </div>
-    <div class="msg"></div>
   </div>
+</header>
+
+<main class="wrap">
+  <div id="devices">
+    <article class="cooker skeleton" id="empty" aria-label="Loading your cookers">
+      <div class="stage"></div>
+      <div class="panel"><div class="bar" style="width:45%"></div><div class="bar" style="width:70%"></div><div class="bar lg"></div><div class="bar lg"></div></div>
+    </article>
+  </div>
+</main>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<template id="tpl-empty">
+  <section class="empty">
+    <h2>No cookers yet</h2>
+    <p>Add your Precision Cooker and it will show up here, live, ready to cook.</p>
+    <a class="btn btn-primary" href="/setup"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add a cooker</a>
+    <div class="sea" aria-hidden="true">
+      <div class="layer rev" style="--c:#5b6cf0;--o:.5;--speed:20s;--bob:7s"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0 17Q75 4 150 17T300 17T450 17T600 17T750 17T900 17T1050 17T1200 17V34H0Z"/></svg><div></div></div>
+      <div class="layer" style="--c:#2f7fe0;--o:.85;--top:16px;--speed:13s;--bob:5s"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0 17Q150 2 300 17T600 17T900 17T1200 17V34H0Z"/></svg><div></div></div>
+      <div class="bubbles"><i style="--x:22%;--s:8px;--d:6s"></i><i style="--x:48%;--s:5px;--d:5s;--t:-2s"></i><i style="--x:70%;--s:7px;--d:7s;--t:-4s"></i><i style="--x:85%;--s:4px;--d:4.5s;--t:-1s"></i></div>
+    </div>
+  </section>
 </template>
+
+<template id="tpl">
+  <article class="cooker" data-status="wait" data-mode="idle">
+    <div class="stage">
+      <div class="steam" aria-hidden="true">
+        <i style="--x:14%;--d:7s;--t:0s;--dx:24px"></i><i style="--x:34%;--d:8.5s;--t:-3s;--dx:-16px"></i>
+        <i style="--x:52%;--d:6.5s;--t:-5s;--dx:20px"></i><i style="--x:24%;--d:9s;--t:-6.5s;--dx:-10px"></i>
+      </div>
+      <div class="water back" aria-hidden="true"><div class="surf">
+        <svg class="wave" viewBox="0 0 1200 30" preserveAspectRatio="none"><path d="M0 15Q75 -1 150 15T300 15T450 15T600 15T750 15T900 15T1050 15T1200 15V30H0Z"/></svg>
+        <div class="body"></div></div></div>
+      <svg class="device" viewBox="0 0 64 320" aria-hidden="true">
+        <rect x="9" y="64" width="46" height="180" rx="7" fill="url(#dv-body)"/>
+        <rect x="12" y="236" width="40" height="80" rx="9" fill="url(#dv-steel)"/>
+        <g fill="#2f353b" opacity=".45"><rect x="18" y="250" width="3.2" height="46" rx="1.6"/><rect x="24.6" y="250" width="3.2" height="46" rx="1.6"/><rect x="31.2" y="250" width="3.2" height="46" rx="1.6"/><rect x="37.8" y="250" width="3.2" height="46" rx="1.6"/><rect x="44.4" y="250" width="3.2" height="46" rx="1.6"/></g>
+        <rect x="12" y="305" width="40" height="11" rx="5.5" fill="#4a5158"/>
+        <rect x="6" y="58" width="52" height="11" rx="4" fill="url(#dv-steel)"/>
+        <rect class="ring" x="9" y="69" width="46" height="3" rx="1.5" filter="url(#dv-glow)"/>
+        <rect x="2" y="0" width="60" height="62" rx="19" fill="url(#dv-head)"/>
+        <rect x="2" y="0" width="60" height="62" rx="19" fill="none" stroke="rgb(255 255 255 / .08)"/>
+        <rect x="10" y="13" width="44" height="24" rx="8" fill="#060708"/>
+        <text class="lcd" x="32" y="29.5" text-anchor="middle" filter="url(#dv-glow)">--.-</text>
+        <circle cx="32" cy="49" r="3.6" fill="none" stroke="#5d626b" stroke-width="1.4"/>
+      </svg>
+      <div class="water front" aria-hidden="true"><div class="surf">
+        <svg class="wave" viewBox="0 0 1200 30" preserveAspectRatio="none"><path d="M0 15Q150 1 300 15T600 15T900 15T1200 15V30H0Z"/><path class="glint" d="M0 15Q150 1 300 15T600 15T900 15T1200 15"/></svg>
+        <div class="body"></div></div></div>
+      <div class="bubbles" aria-hidden="true">
+        <i style="--x:-6px;--s:9px;--d:3.4s;--t:0s;--dx:-30px"></i>
+        <i style="--x:4px;--s:6px;--d:2.8s;--t:-1.1s;--dx:-46px"></i>
+        <i style="--x:-12px;--s:5px;--d:3.9s;--t:-2.2s;--dx:-70px"></i>
+        <i style="--x:8px;--s:7px;--d:3.1s;--t:-.6s;--dx:-22px"></i>
+        <i style="--x:-2px;--s:4px;--d:2.6s;--t:-1.8s;--dx:-90px"></i>
+        <i class="extra" style="--x:-16px;--s:8px;--d:2.4s;--t:-.3s;--dx:-60px"></i>
+        <i class="extra" style="--x:10px;--s:5px;--d:2.2s;--t:-1.4s;--dx:-36px"></i>
+        <i class="extra" style="--x:-8px;--s:6px;--d:2s;--t:-.9s;--dx:-110px"></i>
+        <i class="extra" style="--x:2px;--s:10px;--d:2.7s;--t:-2s;--dx:-80px"></i>
+        <i class="extra" style="--x:-20px;--s:4px;--d:1.9s;--t:-1.6s;--dx:-130px"></i>
+      </div>
+      <div class="rays" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="stage-top"><span class="status"><i></i><span class="status-text">Connecting</span></span><span class="warn-pill" hidden>Low water</span></div>
+      <div class="readout">
+        <div class="label">Water</div>
+        <div class="now"><span class="now-val">–</span><span class="now-unit">°C</span></div>
+        <div class="chips">
+          <span class="chip-target" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg><b class="target-text"></b></span>
+          <span class="chip-timer" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M10 2h4"/></svg><b class="timer-text"></b></span>
+        </div>
+      </div>
+      <div class="tbar"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div><h2 class="name"></h2><p class="meta"></p></div>
+        <div class="seg unit" role="radiogroup" aria-label="Temperature unit" style="--n:2">
+          <span class="thumb"></span>
+          <button type="button" role="radio" data-unit="C" aria-checked="true">°C</button>
+          <button type="button" role="radio" data-unit="F" aria-checked="false">°F</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-label"><span>Target</span><span class="edited">Changed · not applied yet</span></div>
+        <div class="temp-ctl">
+          <button class="round" type="button" data-dir="-1" aria-label="Lower target temperature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+          <label class="temp-val"><input class="temp-input" inputmode="decimal" autocomplete="off" aria-label="Target temperature"><span class="u">°C</span></label>
+          <button class="round" type="button" data-dir="1" aria-label="Raise target temperature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
+        <input class="range" type="range" aria-label="Target temperature slider">
+        <div class="presets" role="group" aria-label="Common targets"></div>
+      </div>
+
+      <div class="timer-row">
+        <span class="group-label">Timer</span>
+        <div class="mini-stepper">
+          <button class="round sm" type="button" data-dir="-1" aria-label="Shorter timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+          <output class="timer-val">Off</output>
+          <button class="round sm" type="button" data-dir="1" aria-label="Longer timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary go" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z"/></svg>Start cooking</button>
+        <button class="btn btn-primary apply" type="button" hidden>Apply changes</button>
+        <button class="btn btn-danger stop" type="button" hidden>Stop</button>
+      </div>
+    </div>
+  </article>
+</template>
+
 <script>
 const devices = new Map();
 const cards = new Map();
 const $ = (sel, el = document) => el.querySelector(sel);
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+const MODELS = {
+  a4: 'Precision Cooker Wi‑Fi', a5: 'Precision Cooker Wi‑Fi', 'honey-badger': 'Precision Cooker Wi‑Fi', pro: 'Precision Cooker Pro',
+  a6: 'Precision Cooker Nano 3.0', a7: 'Precision Cooker 3.0', a8: 'Precision Cooker Mini', a9: 'Precision Cooker Pro 3.0',
+};
+// Common sous vide targets in °C.
+const PRESETS = [['Fish', 50], ['Steak', 54.5], ['Pork', 60], ['Chicken', 63], ['Eggs', 64], ['Veggies', 85]];
+// Slider span and step per unit; typed values may go a little wider (lo..hi).
+const RANGE = { C: { min: 20, max: 95, step: 0.5, lo: 0, hi: 99 }, F: { min: 68, max: 203, step: 1, lo: 32, hi: 210 } };
+
+// Water colour by temperature: cold blue, through violet and rose, to a hot orange-red.
+const PALETTE = [[10, [29, 78, 216]], [22, [47, 127, 224]], [34, [91, 108, 240]], [44, [138, 92, 230]], [51, [212, 87, 159]],
+  [56, [236, 90, 122]], [62, [245, 121, 59]], [75, [240, 83, 45]], [92, [201, 48, 28]]];
+function waterRgb(c) {
+  if (!Number.isFinite(c)) c = 20;
+  if (c <= PALETTE[0][0]) return PALETTE[0][1];
+  for (let i = 1; i < PALETTE.length; i++) {
+    const [t1, a] = PALETTE[i - 1], [t2, b] = PALETTE[i];
+    if (c <= t2) return a.map((x, j) => Math.round(x + (b[j] - x) * (c - t1) / (t2 - t1)));
+  }
+  return PALETTE.at(-1)[1];
+}
+const rgb = (a, alpha = 1) => `rgb(${a.join(' ')} / ${alpha})`;
+const deepen = (a) => a.map((x, j) => Math.round(x * 0.62 + [8, 10, 40][j] * 0.38));
+const TRACK = 'linear-gradient(90deg, ' + Array.from({ length: 16 }, (_, i) => {
+  const c = RANGE.C.min + (RANGE.C.max - RANGE.C.min) * i / 15;
+  return `${rgb(waterRgb(c))} ${(i / 15 * 100).toFixed(1)}%`;
+}).join(', ') + ')';
+
+const toUnit = (c, unit) => unit === 'F' ? c * 1.8 + 32 : c;
+const toC = (x, unit) => unit === 'F' ? (x - 32) / 1.8 : x;
+const round1 = (x) => Math.round(x * 10) / 10;
+const fmt = (c, unit) => c == null ? '–' : toUnit(c, unit).toFixed(1) + '°' + unit;
+
+function hms(sec) {
+  sec = Math.max(0, Math.round(sec));
+  const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0');
+}
+function duration(min) {
+  if (!min) return 'Off';
+  const h = Math.floor(min / 60), m = min % 60;
+  return h ? `${h} h${m ? ` ${m} min` : ''}` : `${m} min`;
+}
+const timerUp = (m) => Math.min(5999, m < 60 ? m + 5 : m < 240 ? m + 15 : m + 30);
+const timerDown = (m) => Math.max(0, m <= 60 ? m - 5 : m <= 240 ? m - 15 : m - 30);
 
 // Normalizes both state formats the cloud sends:
 //  - 3rd gen (a6-a9): SousVideState {state, nodes, systemInfo}
@@ -94,108 +402,349 @@ const $ = (sel, el = document) => el.querySelector(sel);
 function view(d) {
   const s = d.state ?? {};
   if (s.job || s['temperature-info'] || s['job-status']) {
-    const job = s.job ?? {}, status = s['job-status'] ?? {};
-    const remaining = status['cook-time-remaining'];
+    const job = s.job ?? {}, status = s['job-status'] ?? {}, pins = s['pin-info'] ?? {};
+    const mode = String(job.mode ?? '').toUpperCase(), phase = String(status.state ?? '').toUpperCase();
+    const total = Number(job['cook-time-seconds']) || 0;
+    let left = status['cook-time-remaining'];
+    // The cooker reports what is left every few seconds; count down in between while the timer runs.
+    if (left != null && phase === 'COOKING' && d.receivedAt) left -= (Date.now() - d.receivedAt) / 1000;
     return {
       unit: String(job['temperature-unit'] ?? 'C').toUpperCase() === 'F' ? 'F' : 'C',
       current: s['temperature-info']?.['water-temperature'],
       target: job['target-temperature'],
-      mode: [job.mode, status.state].filter(Boolean).join(' / ').toLowerCase(),
-      timer: job['cook-time-seconds'] ? { initial: remaining ?? job['cook-time-seconds'], remainingOnly: true } : null,
-      lowWater: Boolean(s['pin-info']?.['water-level-low'] || s['pin-info']?.['water-level-critical']),
+      cooking: mode === 'COOK',
+      timer: total ? { total, left: left ?? total, running: phase === 'COOKING' } : null,
+      done: phase === 'TIMER EXPIRED',
+      lowWater: Boolean(pins['water-level-low'] || pins['water-level-critical']) || mode === 'LOW WATER',
+      alert: { 'LOW WATER': 'Low water', 'HIGH TEMP': 'Too hot', 'DEVICE FAILURE': 'Needs attention' }[mode] ?? null,
     };
   }
-  const n = s.nodes ?? {};
+  const n = s.nodes ?? {}, mode = s.state?.mode, t = n.timer;
+  let timer = null;
+  if (t?.initial) {
+    let left = t.initial;
+    if (t.mode === 'running' && t.startedAtTimestamp) left -= (Date.now() - Date.parse(t.startedAtTimestamp)) / 1000;
+    timer = { total: t.initial, left, running: t.mode === 'running' };
+  }
   return {
     unit: s.state?.temperatureUnit === 'F' ? 'F' : 'C',
     current: n.waterTemperatureSensor?.current?.celsius,
     target: n.waterTemperatureSensor?.setpoint?.celsius,
-    mode: s.state?.mode,
-    timer: n.timer,
-    lowWater: n.lowWater?.warning,
+    cooking: mode === 'cook',
+    timer,
+    done: t?.mode === 'completed',
+    lowWater: Boolean(n.lowWater?.warning || n.lowWater?.empty) || mode === 'lowWater',
+    alert: { lowWater: 'Low water', highTemp: 'Too hot', motorStuck: 'Motor stuck', waterLeak: 'Water leak' }[mode] ?? null,
     online: s.systemInfo?.online,
   };
 }
-const unitOf = (d) => view(d).unit;
-const fmt = (c, unit) => c == null ? '–' : (unit === 'F' ? (c * 1.8 + 32).toFixed(1) + '°F' : Number(c).toFixed(1) + '°C');
 
-function timerText(t) {
-  if (!t || !t.initial) return '–';
-  let left = t.initial;
-  if (t.remainingOnly) t = { ...t, mode: null };
-  if (t.startedAtTimestamp && t.mode === 'running') left -= (Date.now() - Date.parse(t.startedAtTimestamp)) / 1000;
-  left = Math.max(0, Math.round(left));
-  const h = Math.floor(left / 3600), m = Math.floor(left % 3600 / 60), s = left % 60;
-  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0');
+function statusOf(d, v) {
+  if (!d.state) return ['wait', 'Waiting for the cooker'];
+  if (v.online === false) return ['off', 'Offline'];
+  if (v.alert) return ['alert', v.alert];
+  if (v.done) return ['done', 'Timer done'];
+  if (!v.cooking) return ['idle', 'Idle'];
+  const diff = (v.target ?? 0) - (v.current ?? 0);
+  if (diff > 1) return ['heat', 'Heating'];
+  if (diff < -1.5) return ['cool', 'Cooling to target'];
+  return ['cook', v.timer?.running ? 'Cooking' : 'At temperature'];
+}
+
+// ---------- Toasts and requests ----------
+function toast(text, isError = false) {
+  const el = document.createElement('div');
+  el.className = 'toast' + (isError ? ' err' : '');
+  el.textContent = text;
+  $('#toasts').appendChild(el);
+  setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove(), { once: true }); }, isError ? 5000 : 2600);
 }
 
 async function act(id, action, body = {}) {
-  const msg = $('.msg', cards.get(id));
-  msg.className = 'msg'; msg.textContent = 'Sending ' + action + '…';
-  try {
-    const r = await fetch(`/api/devices/${encodeURIComponent(id)}/${action}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    if (r.status === 401) return location.replace('/login');
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.error);
-    msg.textContent = action + ': ok';
-  } catch (e) { msg.className = 'msg err'; msg.textContent = action + ' failed: ' + e.message; }
+  const r = await fetch(`/api/devices/${encodeURIComponent(id)}/${action}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (r.status === 401) { location.replace('/login'); throw new Error('Signed out'); }
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || `${action} failed`);
+  return j;
 }
+
+async function run(btn, task, okText) {
+  btn?.classList.add('busy');
+  try {
+    await task();
+    if (okText) toast(okText);
+    navigator.vibrate?.(12);
+    return true;
+  } catch (e) {
+    toast(e.message, true);
+    return false;
+  } finally {
+    btn?.classList.remove('busy');
+  }
+}
+
+// Press and hold to keep stepping, faster the longer it is held.
+function holdToRepeat(btn, fn) {
+  let timer;
+  const stop = () => clearTimeout(timer);
+  btn.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    fn();
+    let delay = 420;
+    const loop = () => { timer = setTimeout(() => { fn(); delay = Math.max(45, delay * 0.8); loop(); }, delay); };
+    loop();
+  });
+  for (const t of ['pointerup', 'pointerleave', 'pointercancel']) btn.addEventListener(t, stop);
+  btn.addEventListener('click', (e) => { if (e.detail === 0) fn(); }); // keyboard
+  btn.addEventListener('contextmenu', (e) => e.preventDefault());
+}
+
+// Rolls the big number towards its new value.
+function rollTo(c, el, to) {
+  if (c.rollTarget === to) return;
+  c.rollTarget = to;
+  cancelAnimationFrame(c.raf);
+  if (to == null) { c.shown = null; el.textContent = '–'; return; }
+  const from = c.shown ?? to;
+  if (reduceMotion.matches || Math.abs(from - to) < 0.05) { c.shown = to; el.textContent = to.toFixed(1); return; }
+  const t0 = performance.now(), dur = 1100;
+  const step = (now) => {
+    const k = Math.min(1, (now - t0) / dur), e = 1 - (1 - k) ** 3;
+    c.shown = from + (to - from) * e;
+    el.textContent = c.shown.toFixed(1);
+    if (k < 1) c.raf = requestAnimationFrame(step);
+  };
+  c.raf = requestAnimationFrame(step);
+}
+
+// ---------- Cards ----------
+const visibility = new IntersectionObserver((entries) => {
+  for (const e of entries) e.target.classList.toggle('paused', !e.isIntersecting);
+});
 
 function ensureCard(d) {
   if (cards.has(d.cookerId)) return cards.get(d.cookerId);
-  const el = $('#tpl').content.firstElementChild.cloneNode(true);
   const id = d.cookerId;
-  const form = $('form', el);
-  const vals = () => ({ targetTemperature: Number(form.temp.value), timerMinutes: Number(form.timer.value || 0),
-                        unit: unitOf(devices.get(id)) });
-  form.addEventListener('submit', (e) => { e.preventDefault(); act(id, 'start', vals()); });
-  el.querySelectorAll('button[data-act]').forEach((b) => b.addEventListener('click', () => act(id, b.dataset.act, vals())));
-  $('select', el).addEventListener('change', (e) => act(id, 'unit', { unit: e.target.value }));
-  cards.set(id, el);
-  return el;
+  const el = $('#tpl').content.firstElementChild.cloneNode(true);
+  const q = (s) => $(s, el);
+  const c = {
+    id, el,
+    ui: { unit: null, target: null, timerMin: 0, dirtyTarget: false, dirtyTimer: false, hold: null, pendingUnit: null },
+    r: {
+      stage: q('.stage'), status: q('.status-text'), warn: q('.warn-pill'), now: q('.now-val'), nowUnit: q('.now-unit'),
+      chipTarget: q('.chip-target'), targetText: q('.target-text'), chipTimer: q('.chip-timer'), timerText: q('.timer-text'),
+      lcd: q('.lcd'), name: q('.name'), meta: q('.meta'), seg: q('.seg'), input: q('.temp-input'), u: q('.temp-val .u'),
+      range: q('.range'), presets: q('.presets'), timerVal: q('.timer-val'),
+      go: q('.go'), apply: q('.apply'), stop: q('.stop'),
+    },
+  };
+  const { ui, r } = c;
+  r.range.style.setProperty('--track', TRACK);
+
+  const setTarget = (x) => {
+    const lim = RANGE[ui.unit];
+    ui.target = round1(Math.min(lim.hi, Math.max(lim.lo, x)));
+    ui.dirtyTarget = true;
+    paint(c);
+  };
+  for (const b of el.querySelectorAll('.temp-ctl .round')) {
+    holdToRepeat(b, () => {
+      const step = RANGE[ui.unit].step;
+      // Snap to the step grid first, so 56.3 goes to 56.5 or 56.0.
+      const base = Math.round(ui.target / step) * step;
+      setTarget(base === ui.target || Math.sign(base - ui.target) !== Number(b.dataset.dir) ? base + step * b.dataset.dir : base);
+    });
+  }
+  r.range.addEventListener('input', () => setTarget(Number(r.range.value)));
+  r.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') r.input.blur(); });
+  r.input.addEventListener('change', () => {
+    const x = Number(r.input.value.replace(',', '.'));
+    if (Number.isFinite(x) && r.input.value.trim()) setTarget(x); else paint(c);
+  });
+  r.input.addEventListener('focus', () => r.input.select());
+
+  for (const [label, celsius] of PRESETS) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip';
+    b.style.setProperty('--c', rgb(waterRgb(celsius)));
+    b.innerHTML = '<i></i><span></span><small></small>';
+    b.querySelector('span').textContent = label;
+    b.dataset.c = celsius;
+    b.addEventListener('click', () => setTarget(ui.unit === 'F' ? Math.round(toUnit(celsius, 'F')) : celsius));
+    r.presets.appendChild(b);
+  }
+
+  for (const b of el.querySelectorAll('.mini-stepper .round')) {
+    holdToRepeat(b, () => {
+      ui.timerMin = b.dataset.dir > 0 ? timerUp(ui.timerMin) : timerDown(ui.timerMin);
+      ui.dirtyTimer = true;
+      paint(c);
+    });
+  }
+
+  for (const b of r.seg.querySelectorAll('button')) {
+    b.addEventListener('click', async () => {
+      if (b.dataset.unit === (ui.pendingUnit?.unit ?? ui.unit)) return;
+      ui.pendingUnit = { unit: b.dataset.unit, until: Date.now() + 10000 };
+      paint(c);
+      const ok = await run(null, () => act(id, 'unit', { unit: b.dataset.unit }));
+      if (!ok) { ui.pendingUnit = null; paint(c); }
+    });
+  }
+
+  const holdSent = () => {
+    ui.hold = { target: ui.target, timerMin: ui.timerMin, until: Date.now() + 10000 };
+    ui.dirtyTarget = ui.dirtyTimer = false;
+  };
+  r.go.addEventListener('click', async () => {
+    const body = { targetTemperature: ui.target, unit: ui.unit, timerMinutes: ui.timerMin };
+    if (await run(r.go, () => act(id, 'start', body), `Cooking at ${ui.target.toFixed(1)}°${ui.unit}`)) holdSent();
+    update(c);
+  });
+  r.apply.addEventListener('click', async () => {
+    const { dirtyTarget, dirtyTimer } = ui;
+    const ok = await run(r.apply, async () => {
+      if (dirtyTarget) await act(id, 'temperature', { targetTemperature: ui.target, unit: ui.unit });
+      if (dirtyTimer) await act(id, 'timer', { timerMinutes: ui.timerMin });
+    }, 'Changes applied');
+    if (ok) holdSent();
+    update(c);
+  });
+  // Stopping ruins a cook if it is a mistake, so it takes a second tap.
+  const resetStop = () => { clearTimeout(c.stopTimer); r.stop.classList.remove('confirm'); r.stop.textContent = 'Stop'; };
+  r.stop.addEventListener('click', async () => {
+    if (!r.stop.classList.contains('confirm')) {
+      r.stop.classList.add('confirm');
+      r.stop.textContent = 'Tap again to stop';
+      c.stopTimer = setTimeout(resetStop, 3500);
+      return;
+    }
+    resetStop();
+    await run(r.stop, () => act(id, 'stop'), 'Cooking stopped');
+    update(c);
+  });
+
+  cards.set(id, c);
+  visibility.observe(el);
+  return c;
+}
+
+// Applies the cooker's latest state to the stage and keeps the controls in sync with it.
+function update(c) {
+  const d = devices.get(c.id), v = view(d), { ui, r, el } = c;
+  c.v = v;
+  const unit = v.unit, now = Date.now();
+  if (ui.pendingUnit && (ui.pendingUnit.unit === unit || now > ui.pendingUnit.until)) ui.pendingUnit = null;
+  if (ui.unit && ui.unit !== unit && ui.target != null) ui.target = round1(toUnit(toC(ui.target, ui.unit), unit));
+  if (ui.unit !== unit) {
+    const { min, max, step } = RANGE[unit];
+    Object.assign(r.range, { min, max, step });
+    ui.hold = null;
+  }
+  ui.unit = unit;
+
+  // Controls follow the cooker unless the user is editing them, or has just sent a change it hasn't reported yet.
+  const devTarget = v.target != null ? round1(toUnit(v.target, unit)) : null;
+  const devTimer = v.timer ? Math.round(v.timer.total / 60) : 0;
+  if (ui.hold && (now > ui.hold.until || (Math.abs((devTarget ?? NaN) - ui.hold.target) < 0.15 && devTimer === ui.hold.timerMin))) ui.hold = null;
+  if (!ui.dirtyTarget) ui.target = ui.hold ? ui.hold.target : devTarget ?? ui.target ?? (unit === 'F' ? 134 : 56.5);
+  if (!ui.dirtyTimer) ui.timerMin = ui.hold ? ui.hold.timerMin : devTimer;
+
+  const [key, text] = statusOf(d, v);
+  el.dataset.status = key;
+  el.dataset.mode = v.cooking && v.online !== false ? 'cook' : 'idle';
+  el.toggleAttribute('data-low', Boolean(v.lowWater));
+  el.toggleAttribute('data-dim', !d.state || v.online === false);
+  r.status.textContent = text;
+  r.warn.hidden = !v.lowWater || key === 'alert';
+
+  const water = waterRgb(v.current ?? 20);
+  r.stage.style.setProperty('--water', rgb(water));
+  r.stage.style.setProperty('--water-deep', rgb(deepen(water)));
+  r.stage.style.setProperty('--steam', Math.max(0, Math.min(1, ((v.current ?? 0) - 38) / 30)).toFixed(2));
+
+  rollTo(c, r.now, v.current != null ? round1(toUnit(v.current, unit)) : null);
+  r.nowUnit.textContent = '°' + unit;
+  r.lcd.textContent = v.current != null ? toUnit(v.current, unit).toFixed(1) : '--.-';
+  r.chipTarget.hidden = v.target == null || !v.cooking;
+  r.targetText.textContent = fmt(v.target, unit);
+  const t = v.timer;
+  r.chipTimer.hidden = !t || (!v.cooking && !v.done);
+  r.timerText.textContent = !t ? '' : v.done ? 'Done' : t.running ? hms(t.left) + ' left' : hms(t.total);
+  el.toggleAttribute('data-timer', Boolean(t && (t.running || v.done)));
+  r.stage.style.setProperty('--p', t ? Math.min(1, Math.max(0, 1 - t.left / t.total)).toFixed(4) : 0);
+
+  r.name.textContent = d.name || d.cookerId;
+  r.meta.textContent = [MODELS[d.type] ?? d.type, d.state ? null : 'no status from the cloud yet'].filter(Boolean).join(' · ');
+  paint(c);
+}
+
+// Redraws just the controls from the card's UI state.
+function paint(c) {
+  const { ui, r, el, v } = c;
+  const unit = ui.unit;
+  if (document.activeElement !== r.input) r.input.value = ui.target.toFixed(1);
+  r.range.value = ui.target;
+  r.range.style.setProperty('--thumb', rgb(waterRgb(toC(ui.target, unit)), 0.9));
+  r.u.textContent = '°' + unit;
+  for (const b of r.presets.children) {
+    const x = unit === 'F' ? Math.round(toUnit(Number(b.dataset.c), 'F')) : Number(b.dataset.c);
+    b.querySelector('small').textContent = x + '°';
+    b.setAttribute('aria-pressed', String(Math.abs(x - ui.target) < 0.05));
+  }
+  r.timerVal.textContent = duration(ui.timerMin);
+
+  const shownUnit = ui.pendingUnit?.unit ?? unit;
+  r.seg.querySelectorAll('button').forEach((b, i) => {
+    b.setAttribute('aria-checked', String(b.dataset.unit === shownUnit));
+    if (b.dataset.unit === shownUnit) r.seg.style.setProperty('--i', i);
+  });
+
+  const dirty = v.cooking && (ui.dirtyTarget || ui.dirtyTimer);
+  el.classList.toggle('dirty', dirty);
+  r.go.hidden = v.cooking;
+  r.stop.hidden = !v.cooking;
+  r.apply.hidden = !dirty;
 }
 
 let listLoaded = false;
 function render() {
   const root = $('#devices');
   if (!devices.size) {
-    if (listLoaded && $('#empty')) $('#empty').innerHTML = 'No cookers in this account yet. <a href="/setup">Add a cooker</a> to get started.';
+    if (listLoaded && $('#empty')) $('#empty').replaceWith($('#tpl-empty').content.firstElementChild.cloneNode(true));
     return;
   }
   $('#empty')?.remove();
+  root.querySelector('.empty')?.remove();
   for (const d of devices.values()) {
-    const el = ensureCard(d);
-    if (!el.isConnected) root.appendChild(el);
-    const v = view(d), unit = v.unit;
-    $('.name', el).textContent = d.name || d.cookerId;
-    $('.meta', el).textContent = [d.type, v.mode, v.online === false ? 'offline' : null, v.lowWater ? 'low water' : null,
-      d.state ? null : 'no status from the cloud yet'].filter(Boolean).join(' · ');
-    $('.current', el).textContent = fmt(v.current, unit);
-    $('.target', el).textContent = fmt(v.target, unit);
-    $('.timer', el).textContent = timerText(v.timer);
-    $('select', el).value = unit;
-    const input = el.querySelector('input[name=temp]');
-    if (el.dataset.unit && el.dataset.unit !== unit && input.value) {
-      const v = Number(input.value);
-      input.value = (unit === 'F' ? v * 1.8 + 32 : (v - 32) / 1.8).toFixed(1);
-    }
-    el.dataset.unit = unit;
-    if (!input.value && v.target != null) {
-      const c = v.target;
-      input.value = unit === 'F' ? (c * 1.8 + 32).toFixed(1) : c;
-    }
+    const c = ensureCard(d);
+    if (!c.el.isConnected) root.appendChild(c.el);
+    update(c);
   }
+  const first = cards.values().next().value;
+  if (first?.v) document.body.style.setProperty('--glow', rgb(waterRgb(first.v.current ?? 20), matchMedia('(prefers-color-scheme: dark)').matches ? 0.22 : 0.16));
 }
 
+// ---------- Page chrome ----------
 fetch('/api/me').then((r) => {
   if (r.status === 401) return location.replace('/login');
-  return r.json().then((me) => { $('#who').textContent = 'Signed in as ' + me.email; });
+  return r.json().then((me) => {
+    $('#who').textContent = me.email;
+    $('#account').textContent = (me.email?.[0] ?? '·').toUpperCase();
+  });
 });
+const menu = $('#menu'), account = $('#account');
+const setMenu = (open) => { menu.hidden = !open; account.setAttribute('aria-expanded', String(open)); };
+account.addEventListener('click', (e) => { e.stopPropagation(); setMenu(menu.hidden); });
+document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target)) setMenu(false); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
 $('#logout').addEventListener('click', async () => {
   await fetch('/api/logout', { method: 'POST' });
   location.replace('/login');
 });
+addEventListener('scroll', () => $('#topbar').classList.toggle('scrolled', scrollY > 4), { passive: true });
 
 const es = new EventSource('/api/events');
 es.onerror = () => fetch('/api/me').then((r) => { if (r.status === 401) location.replace('/login'); });
@@ -203,7 +752,7 @@ es.addEventListener('status', (e) => {
   const s = JSON.parse(e.data), pill = $('#conn');
   // Once connected, the cloud sends the account's cooker list right away; an empty list after that means none.
   if (s.connected) setTimeout(() => { listLoaded = true; render(); }, 1500);
-  pill.textContent = (s.connected ? 'connected' : 'disconnected') + (s.mock ? ' (mock)' : '');
+  $('span', pill).textContent = (s.connected ? 'Live' : 'Offline') + (s.mock ? ' · demo' : '');
   pill.className = 'pill ' + (s.connected ? 'on' : 'off');
 });
 es.addEventListener('devices', (e) => {
@@ -212,7 +761,7 @@ es.addEventListener('devices', (e) => {
 });
 es.addEventListener('state', (e) => {
   const p = JSON.parse(e.data);
-  devices.set(p.cookerId, { ...devices.get(p.cookerId), cookerId: p.cookerId, type: p.type, state: p.state });
+  devices.set(p.cookerId, { ...devices.get(p.cookerId), cookerId: p.cookerId, type: p.type, state: p.state, receivedAt: Date.now() });
   render();
 });
 setInterval(render, 1000);

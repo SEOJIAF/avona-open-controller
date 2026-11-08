@@ -154,6 +154,7 @@ All routes except `/login`, `/api/login`, `/api/signup` and `/api/config` need t
 | `gen2-setup.mjs` | 2nd‑gen Wi‑Fi setup: cooker hotspot HTTP API and NetworkManager control |
 | `public/gen3-ble.js` | 3rd‑gen Bluetooth setup protocol (Web Bluetooth) |
 | `public/*.html` | Login, dashboard, setup pages |
+| `public/app.css`, `public/icon.svg` | Shared styles (light/dark, animated water) and app icon |
 | `mock-cloud.mjs`, `public/mock-bluetooth.js` | Offline simulation for `MOCK=1` |
 | `tests/` | `npm test` |
 | `tools/make-local-https.sh` | Local CA and certificate for LAN HTTPS |
