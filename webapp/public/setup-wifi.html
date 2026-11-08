@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wi‑Fi cooker setup · Open Avona</title>
+<style>
+  :root {
+    --bg: #f6f4f0; --card: #ffffff; --text: #1d1d1b; --muted: #6b6860; --line: #e2ded6;
+    --accent: #d2491f; --accent-text: #ffffff; --ok: #2e7d4f; --bad: #b3261e; --note: #fbefe2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161513; --card: #22201d; --text: #f2efe9; --muted: #a29d93; --line: #36332e;
+            --accent: #ff7a4d; --accent-text: #1a0d07; --ok: #6fcf97; --bad: #ff8a80; --note: #2d241c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  header a { color: var(--muted); font-size: .9rem; }
+  h1 { font-size: 1.4rem; margin: 0; }
+  h2 { font-size: 1.15rem; margin: 0 0 8px; }
+  .steps { display: flex; gap: 6px; margin-bottom: 16px; }
+  .steps span { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+  .steps span.done { background: var(--accent); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); font-size: .9rem; }
+  ol { margin: 0 0 14px; padding-left: 20px; }
+  ol li { margin-bottom: 6px; }
+  .btn { display: block; width: 100%; padding: 11px; border-radius: 8px; border: 1px solid var(--line);
+         background: var(--bg); color: var(--text); font: inherit; cursor: pointer; text-align: center; text-decoration: none; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .btn + .btn { margin-top: 8px; }
+  .code-input { font-size: 2rem; letter-spacing: .4em; text-align: center; font-variant-numeric: tabular-nums; }
+  .nets { display: grid; gap: 6px; margin: 4px 0 14px; }
+  .nets button { text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line);
+                 background: var(--bg); color: var(--text); font: inherit; cursor: pointer; }
+  .nets button[aria-pressed=true] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); margin-bottom: 12px; }
+  label.check { display: flex; gap: 8px; align-items: flex-start; font-size: .9rem; color: var(--text); }
+  label.check input { width: auto; margin-top: 3px; }
+  input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--line);
+          background: var(--bg); color: var(--text); font: inherit; }
+  .pw { display: grid; grid-template-columns: 1fr auto; gap: 6px; }
+  .pw button { padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg);
+               color: var(--muted); font: inherit; font-size: .85rem; cursor: pointer; }
+  .err { color: var(--bad); font-size: .9rem; min-height: 1.2em; margin: 0 0 10px; }
+  .note { background: var(--note); border-radius: 8px; padding: 10px 12px; font-size: .85rem; color: var(--muted); margin-top: 14px; }
+  .spinner { width: 28px; height: 28px; border: 3px solid var(--line); border-top-color: var(--accent);
+             border-radius: 50%; animation: spin 1s linear infinite; margin: 8px auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .success { color: var(--ok); font-weight: 600; }
+  code { font-size: .95em; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header><h1>Add a Wi‑Fi cooker</h1><a href="/">Back to my cookers</a></header>
+  <div class="steps" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+
+  <section class="card" data-step="code">
+    <h2>Get the code from your cooker</h2>
+    <p class="muted">For the Precision Cooker Wi‑Fi (model AN500) and Pro Wi‑Fi. This also moves a cooker that is linked to an old account over to <b id="who">your account</b>.</p>
+    <ol>
+      <li>Plug the cooker in and keep it close to this computer.</li>
+      <li>Press and hold the <b>target temperature</b> button on the cooker for <b>5 seconds</b>.</li>
+      <li>A four-digit code appears on its display. Type it here.</li>
+    </ol>
+    <form id="code-form">
+      <label>Code on the cooker <input class="code-input" name="code" inputmode="numeric" maxlength="4" placeholder="0000" autocomplete="off" required></label>
+      <label class="check"><input type="checkbox" name="auto" checked>
+        <span>Switch this computer to the cooker's Wi‑Fi automatically. You'll be offline for about a minute and reconnected to <b id="prev-wifi">your Wi‑Fi</b> afterwards.</span></label>
+      <p class="muted" id="manual-hint" hidden>Connect this computer to the Wi‑Fi network <code id="hs-name">Anova ####</code>, password <code id="hs-pass">########</code>, then press Continue.</p>
+      <p class="err" id="code-err" role="alert"></p>
+      <button class="btn primary" type="submit">Continue</button>
+    </form>
+    <p class="note" id="not-local" hidden>Open this page on the computer that runs the server (<code>http://localhost:8080/setup-wifi</code>). Setup has to switch that computer's Wi‑Fi.</p>
+  </section>
+
+  <section class="card" data-step="working" hidden>
+    <div class="spinner"></div>
+    <h2 id="working-title">Connecting to your cooker</h2>
+    <p class="muted" id="working-text"></p>
+  </section>
+
+  <section class="card" data-step="wifi" hidden>
+    <h2>Choose your home Wi‑Fi</h2>
+    <p class="muted" id="scan-status">The cooker is looking for networks…</p>
+    <div class="nets" id="nets"></div>
+    <form id="wifi-form">
+      <label>Network name (2.4 GHz) <input name="ssid" autocomplete="off" autocapitalize="none" required></label>
+      <label>Password
+        <span class="pw"><input name="password" type="password" autocomplete="off"><button type="button" id="toggle-pw">Show</button></span>
+      </label>
+      <p class="err" id="wifi-err" role="alert"></p>
+      <button class="btn primary" type="submit">Connect cooker</button>
+      <button class="btn" type="button" id="rescan">Scan again</button>
+    </form>
+  </section>
+
+  <section class="card" data-step="done" hidden>
+    <h2 class="success">Connected!</h2>
+    <p>Your cooker is on your Wi‑Fi and linked to <b id="done-who"></b>.</p>
+    <a class="btn primary" href="/">Start cooking</a>
+  </section>
+
+  <section class="card" data-step="error" hidden>
+    <h2>Setup didn't finish</h2>
+    <p class="err" id="error-text"></p>
+    <button class="btn primary" id="restart">Start over</button>
+  </section>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+const ORDER = ['code', 'working', 'wifi', 'done'];
+let me, deviceId = null, networks = [], selectedSecurity = null;
+
+function show(step) {
+  document.querySelectorAll('[data-step]').forEach((el) => (el.hidden = el.dataset.step !== step));
+  const i = ORDER.indexOf(step);
+  document.querySelectorAll('.steps span').forEach((el, j) => el.classList.toggle('done', i >= 0 && j < i));
+}
+function working(title, text) {
+  $('#working-title').textContent = title;
+  $('#working-text').textContent = text;
+  show('working');
+}
+async function api(path, body = {}) {
+  const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (r.status === 401) location.replace('/login');
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error);
+  return j;
+}
+function fail(err) {
+  $('#error-text').textContent = err.message ?? String(err);
+  show('error');
+}
+
+async function init() {
+  const r = await fetch('/api/me');
+  if (r.status === 401) return location.replace('/login');
+  me = await r.json();
+  $('#who').textContent = me.email;
+  $('#done-who').textContent = me.email;
+  const info = await (await fetch('/api/gen2/info')).json();
+  if (!info.local) {
+    $('#not-local').hidden = false;
+    $('#code-form').querySelector('button[type=submit]').disabled = true;
+  }
+  if (!info.nmcli) {
+    const auto = $('#code-form').auto;
+    auto.checked = false;
+    auto.disabled = true;
+    updateManualHint();
+  }
+}
+
+function updateManualHint() {
+  const f = $('#code-form');
+  const code = f.code.value.replace(/\D/g, '');
+  $('#manual-hint').hidden = f.auto.checked;
+  $('#hs-name').textContent = `Anova ${code || '####'}`;
+  $('#hs-pass').textContent = code.length === 4 ? code + code : '########';
+}
+$('#code-form').addEventListener('input', updateManualHint);
+
+$('#code-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const code = f.code.value.replace(/\D/g, '');
+  $('#code-err').textContent = '';
+  if (code.length !== 4) return ($('#code-err').textContent = 'Type the 4-digit code shown on the cooker.');
+  try {
+    working('Connecting to your cooker', f.auto.checked
+      ? `Switching this computer to the Wi‑Fi “Anova ${code}”. You are offline until setup finishes.`
+      : 'Talking to the cooker at 10.123.45.1…');
+    const r = await api('/api/gen2/join', { code, auto: f.auto.checked });
+    deviceId = r.deviceId;
+    show('wifi');
+    scan();
+  } catch (err) {
+    show('code');
+    $('#code-err').textContent = err.message;
+  }
+});
+
+async function scan() {
+  const nets = $('#nets');
+  nets.innerHTML = '';
+  $('#scan-status').textContent = 'The cooker is looking for networks…';
+  try {
+    networks = (await api('/api/gen2/scan')).networks;
+    $('#scan-status').textContent = networks.length
+      ? 'Pick the network the cooker should use, or type its name.'
+      : 'The cooker found no networks. Type the name below.';
+    for (const n of networks) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = n.ssid;
+      b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => {
+        nets.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        $('#wifi-form').ssid.value = n.ssid;
+        selectedSecurity = n.securityType;
+        $('#wifi-form').password.focus();
+      });
+      nets.appendChild(b);
+    }
+  } catch (err) {
+    $('#scan-status').textContent = `Scan failed (${err.message}). Type the network name below.`;
+  }
+}
+$('#rescan').addEventListener('click', scan);
+$('#toggle-pw').addEventListener('click', () => {
+  const pw = $('#wifi-form').password;
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+  $('#toggle-pw').textContent = pw.type === 'password' ? 'Show' : 'Hide';
+});
+$('#wifi-form').ssid.addEventListener('input', (e) => {
+  selectedSecurity = networks.find((n) => n.ssid === e.target.value)?.securityType ?? null;
+});
+
+$('#wifi-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  $('#wifi-err').textContent = '';
+  const ssid = f.ssid.value.trim();
+  if (!ssid) return ($('#wifi-err').textContent = 'Choose or type a network name.');
+  try {
+    working('Connecting the cooker to your Wi‑Fi', `Sending “${ssid}” to the cooker and linking it to ${me.email}. This can take up to 2 minutes.`);
+    const r = await api('/api/gen2/configure', { ssid, password: f.password.value, securityType: selectedSecurity });
+    working('Waiting for your cooker to come online',
+      `${r.previousWifi ? `This computer is going back to “${r.previousWifi}”. ` : 'Reconnect this computer to your normal Wi‑Fi now. '}The cooker is joining your Wi‑Fi and checking in with Anova.`);
+    await waitForCloud(deviceId);
+    show('done');
+  } catch (err) {
+    show('wifi');
+    $('#wifi-err').textContent = err.message;
+  }
+});
+
+// confirmPairing: the app waits up to ~2 minutes for the cooker to appear in the account's cooker list.
+function waitForCloud(id) {
+  return new Promise((resolve, reject) => {
+    let es, known = null;
+    const timer = setTimeout(() => {
+      es?.close();
+      reject(new Error('The cooker was set up but has not appeared in your account yet. Check that the Wi‑Fi icon on the cooker is lit, then open your cookers list in a few minutes.'));
+    }, 240_000);
+    const open = () => {
+      es = new EventSource('/api/events');
+      es.addEventListener('devices', (ev) => {
+        const ids = JSON.parse(ev.data).map((d) => d.cookerId);
+        if (known === null) known = new Set(ids);
+        if (ids.some((x) => x === id || !known.has(x))) {
+          clearTimeout(timer);
+          es.close();
+          resolve();
+        }
+      });
+      // The local server stays reachable, but reopen in case the stream dropped while networks changed.
+      es.onerror = () => { es.close(); setTimeout(open, 3000); };
+    };
+    open();
+  });
+}
+
+$('#restart').addEventListener('click', async () => {
+  await api('/api/gen2/cancel').catch(() => {});
+  location.reload();
+});
+init().catch(fail);
+</script>
+</body>
+</html>

@@ -1,0 +1,1887 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "defaultProperties": [],
+ "definitions": {
+  "BoilerSteamGeneratorNodeV2": {
+   "defaultProperties": [],
+   "properties": {
+    "boiler": {
+     "defaultProperties": [],
+     "properties": {
+      "celsius": {
+       "type": "number"
+      },
+      "dc12VInletPumpStatus": {
+       "type": "string"
+      },
+      "dc12VOutletValveDescaleStatus": {
+       "type": "string"
+      },
+      "descaleRequired": {
+       "type": "boolean"
+      },
+      "dosed": {
+       "type": "boolean"
+      },
+      "failed": {
+       "type": "boolean"
+      },
+      "ntcConnected": {
+       "type": "boolean"
+      },
+      "numberOfOverCurrentInletPump": {
+       "type": "number"
+      },
+      "numberOfOverCurrentOutletValveDescale": {
+       "type": "number"
+      },
+      "usageHours": {
+       "type": "number"
+      },
+      "watts": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "celsius",
+      "dc12VInletPumpStatus",
+      "dc12VOutletValveDescaleStatus",
+      "descaleRequired",
+      "dosed",
+      "failed",
+      "ntcConnected",
+      "numberOfOverCurrentInletPump",
+      "numberOfOverCurrentOutletValveDescale",
+      "usageHours",
+      "watts"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "boiler"
+   ],
+   "type": "object"
+  },
+  "CavityCameraDetection": {
+   "defaultProperties": [],
+   "properties": {
+    "categoryId": {
+     "type": "string"
+    },
+    "confidence": {
+     "type": "number"
+    },
+    "details": {
+     "$ref": "#/definitions/Record"
+    },
+    "type": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "categoryId",
+    "confidence",
+    "type"
+   ],
+   "type": "object"
+  },
+  "CavityCameraNode": {
+   "defaultProperties": [],
+   "properties": {
+    "detection": {
+     "items": {
+      "$ref": "#/definitions/CavityCameraDetection"
+     },
+     "type": "array"
+    },
+    "enabled": {
+     "type": "boolean"
+    },
+    "isEmpty": {
+     "type": "boolean"
+    },
+    "streaming": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "detection",
+    "enabled",
+    "isEmpty",
+    "streaming"
+   ],
+   "type": "object"
+  },
+  "CavityLampNode": {
+   "defaultProperties": [],
+   "properties": {
+    "failed": {
+     "type": "boolean"
+    },
+    "on": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "on"
+   ],
+   "type": "object"
+  },
+  "Conditions": {
+   "defaultProperties": [],
+   "properties": {
+    "<": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "<=": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "=": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    ">": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    ">=": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "equals": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "exists": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    }
+   },
+   "type": "object"
+  },
+  "ConnectedTemperatureProbeNodeV2": {
+   "defaultProperties": [],
+   "properties": {
+    "connected": {
+     "enum": [
+      true
+     ],
+     "type": "boolean"
+    },
+    "current": {
+     "defaultProperties": [],
+     "properties": {
+      "celsius": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "celsius"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "connected",
+    "current"
+   ],
+   "type": "object"
+  },
+  "CookV2": {
+   "defaultProperties": [],
+   "properties": {
+    "activeStageId": {
+     "type": "string"
+    },
+    "activeStageIndex": {
+     "type": "number"
+    },
+    "activeStageMode": {
+     "type": "string"
+    },
+    "activeStageStartedTimestamp": {
+     "type": "string"
+    },
+    "cookId": {
+     "type": "string"
+    },
+    "cookableType": {
+     "type": "string"
+    },
+    "originSource": {
+     "type": "string"
+    },
+    "stages": {
+     "items": {
+      "$ref": "#/definitions/StageV2"
+     },
+     "type": "array"
+    },
+    "startedTimestamp": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "activeStageId",
+    "activeStageIndex",
+    "activeStageMode",
+    "activeStageStartedTimestamp",
+    "cookId",
+    "cookableType",
+    "originSource",
+    "stages",
+    "startedTimestamp"
+   ],
+   "type": "object"
+  },
+  "Dc12VLineNode": {
+   "defaultProperties": [],
+   "properties": {
+    "numberOfFaults": {
+     "type": "number"
+    },
+    "numberOfRejections": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "numberOfFaults",
+    "numberOfRejections"
+   ],
+   "type": "object"
+  },
+  "DisconnectedTemperatureProbeNode": {
+   "defaultProperties": [],
+   "properties": {
+    "connected": {
+     "enum": [
+      false
+     ],
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "connected"
+   ],
+   "type": "object"
+  },
+  "DisplayBoardNode": {
+   "defaultProperties": [],
+   "properties": {
+    "celsius": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "celsius"
+   ],
+   "type": "object"
+  },
+  "DisplayFanNode": {
+   "defaultProperties": [],
+   "properties": {
+    "dc12VStatus": {
+     "type": "string"
+    },
+    "numberOfOverCurrent": {
+     "type": "number"
+    },
+    "speed": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "dc12VStatus",
+    "numberOfOverCurrent",
+    "speed"
+   ],
+   "type": "object"
+  },
+  "DoorLampNode": {
+   "defaultProperties": [],
+   "properties": {
+    "failed": {
+     "type": "boolean"
+    },
+    "on": {
+     "type": "boolean"
+    },
+    "preferences": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "on",
+    "preferences"
+   ],
+   "type": "object"
+  },
+  "DoorNode": {
+   "defaultProperties": [],
+   "properties": {
+    "closed": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "closed"
+   ],
+   "type": "object"
+  },
+  "DryTemperatureBulbNodeV2": {
+   "defaultProperties": [],
+   "properties": {
+    "dry": {
+     "defaultProperties": [],
+     "properties": {
+      "current": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      },
+      "numberOfOverCurrent": {
+       "type": "number"
+      },
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "current",
+      "numberOfOverCurrent"
+     ],
+     "type": "object"
+    },
+    "dryBottom": {
+     "defaultProperties": [],
+     "properties": {
+      "current": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      },
+      "ntcConnected": {
+       "type": "boolean"
+      },
+      "numberOfOverCurrent": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "current",
+      "ntcConnected",
+      "numberOfOverCurrent"
+     ],
+     "type": "object"
+    },
+    "dryTop": {
+     "defaultProperties": [],
+     "properties": {
+      "current": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      },
+      "ntcConnected": {
+       "type": "boolean"
+      },
+      "numberOfOverCurrent": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "current",
+      "ntcConnected",
+      "numberOfOverCurrent"
+     ],
+     "type": "object"
+    },
+    "mode": {
+     "enum": [
+      "dry"
+     ],
+     "type": "string"
+    },
+    "wet": {
+     "defaultProperties": [],
+     "properties": {
+      "current": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      },
+      "dc12VInletStatus": {
+       "type": "string"
+      },
+      "dosed": {
+       "type": "boolean"
+      },
+      "ntcConnected": {
+       "type": "boolean"
+      },
+      "numberOfOverCurrent": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "current",
+      "dc12VInletStatus",
+      "dosed",
+      "ntcConnected",
+      "numberOfOverCurrent"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "dry",
+    "dryBottom",
+    "dryTop",
+    "mode",
+    "wet"
+   ],
+   "type": "object"
+  },
+  "EvaporatorSteamGeneratorNodeV2": {
+   "defaultProperties": [],
+   "properties": {
+    "evaporator": {
+     "defaultProperties": [],
+     "properties": {
+      "celsius": {
+       "type": "number"
+      },
+      "failed": {
+       "type": "boolean"
+      },
+      "ntcConnected": {
+       "type": "boolean"
+      },
+      "watts": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "celsius",
+      "failed",
+      "ntcConnected",
+      "watts"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "evaporator"
+   ],
+   "type": "object"
+  },
+  "ExhaustFanNode": {
+   "defaultProperties": [],
+   "properties": {
+    "dc12VStatus": {
+     "type": "string"
+    },
+    "numberOfOverCurrent": {
+     "type": "number"
+    },
+    "speed": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "dc12VStatus",
+    "numberOfOverCurrent",
+    "speed"
+   ],
+   "type": "object"
+  },
+  "ExhaustVentNode": {
+   "defaultProperties": [],
+   "properties": {
+    "dc12VStatus": {
+     "type": "string"
+    },
+    "numberOfOverCurrent": {
+     "type": "number"
+    },
+    "state": {
+     "enum": [
+      "closed",
+      "open-max",
+      "open-mid"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "dc12VStatus",
+    "numberOfOverCurrent",
+    "state"
+   ],
+   "type": "object"
+  },
+  "FanNodeV2": {
+   "defaultProperties": [],
+   "properties": {
+    "failed": {
+     "type": "boolean"
+    },
+    "speed": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "failed",
+    "speed"
+   ],
+   "type": "object"
+  },
+  "HeatingElement": {
+   "defaultProperties": [],
+   "properties": {
+    "failed": {
+     "type": "boolean"
+    },
+    "on": {
+     "type": "boolean"
+    },
+    "watts": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "failed",
+    "on",
+    "watts"
+   ],
+   "type": "object"
+  },
+  "HeatingElementsNode": {
+   "defaultProperties": [],
+   "properties": {
+    "bottom": {
+     "$ref": "#/definitions/HeatingElement"
+    },
+    "rear": {
+     "$ref": "#/definitions/HeatingElement"
+    },
+    "top": {
+     "$ref": "#/definitions/HeatingElement"
+    }
+   },
+   "required": [
+    "bottom",
+    "rear",
+    "top"
+   ],
+   "type": "object"
+  },
+  "IdleSteamGeneratorNode": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "idle"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "mode"
+   ],
+   "type": "object"
+  },
+  "LedFanNode": {
+   "defaultProperties": [],
+   "properties": {
+    "dc12VStatus": {
+     "type": "string"
+    },
+    "numberOfOverCurrent": {
+     "type": "number"
+    },
+    "speed": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "dc12VStatus",
+    "numberOfOverCurrent",
+    "speed"
+   ],
+   "type": "object"
+  },
+  "NodesV2": {
+   "defaultProperties": [],
+   "properties": {
+    "cavityCamera": {
+     "$ref": "#/definitions/CavityCameraNode"
+    },
+    "cavityLamp": {
+     "$ref": "#/definitions/CavityLampNode"
+    },
+    "dc12VLine": {
+     "$ref": "#/definitions/Dc12VLineNode"
+    },
+    "displayBoard": {
+     "$ref": "#/definitions/DisplayBoardNode"
+    },
+    "displayFan": {
+     "$ref": "#/definitions/DisplayFanNode"
+    },
+    "door": {
+     "$ref": "#/definitions/DoorNode"
+    },
+    "doorLamp": {
+     "$ref": "#/definitions/DoorLampNode"
+    },
+    "exhaustFan": {
+     "$ref": "#/definitions/ExhaustFanNode"
+    },
+    "exhaustVent": {
+     "$ref": "#/definitions/ExhaustVentNode"
+    },
+    "fan": {
+     "$ref": "#/definitions/FanNodeV2"
+    },
+    "heatingElements": {
+     "$ref": "#/definitions/HeatingElementsNode"
+    },
+    "ledFan": {
+     "$ref": "#/definitions/LedFanNode"
+    },
+    "powerBoardFan": {
+     "$ref": "#/definitions/PowerBoardFanNode"
+    },
+    "steamGenerators": {
+     "$ref": "#/definitions/SteamGeneratorsNodeV2"
+    },
+    "temperatureBulbs": {
+     "$ref": "#/definitions/TemperatureBulbsNodeV2"
+    },
+    "temperatureProbe": {
+     "$ref": "#/definitions/TemperatureProbeNodeV2"
+    },
+    "timer": {
+     "$ref": "#/definitions/TimerNodeV2"
+    },
+    "wasteWaterTank": {
+     "$ref": "#/definitions/WasteWaterTankNode"
+    },
+    "waterTank": {
+     "$ref": "#/definitions/WaterTankNodeV2"
+    }
+   },
+   "required": [
+    "cavityCamera",
+    "cavityLamp",
+    "dc12VLine",
+    "displayBoard",
+    "displayFan",
+    "door",
+    "doorLamp",
+    "exhaustFan",
+    "exhaustVent",
+    "fan",
+    "heatingElements",
+    "ledFan",
+    "powerBoardFan",
+    "steamGenerators",
+    "temperatureBulbs",
+    "temperatureProbe",
+    "timer",
+    "wasteWaterTank",
+    "waterTank"
+   ],
+   "type": "object"
+  },
+  "OtaUpdateMode": {
+   "enum": [
+    "default",
+    "downloading",
+    "downloading_partial",
+    "error",
+    "power_board_updating",
+    "reboot",
+    "rollback",
+    "update",
+    "update_partial"
+   ],
+   "type": "string"
+  },
+  "OtaUpdateV2": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "$ref": "#/definitions/OtaUpdateMode"
+    },
+    "progress": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "mode"
+   ],
+   "type": "object"
+  },
+  "PowerBoardFanNode": {
+   "defaultProperties": [],
+   "properties": {
+    "dc12VStatus": {
+     "type": "string"
+    },
+    "numberOfOverCurrent": {
+     "type": "number"
+    },
+    "on": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "dc12VStatus",
+    "numberOfOverCurrent",
+    "on"
+   ],
+   "type": "object"
+  },
+  "Record": {
+   "$ref": "#/definitions/__type"
+  },
+  "RelativeHumiditySteamGeneratorNodeV2": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "relative-humidity"
+     ],
+     "type": "string"
+    },
+    "relativeHumidity": {
+     "defaultProperties": [],
+     "properties": {
+      "current": {
+       "type": "number"
+      },
+      "setpoint": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "current",
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "relativeHumidity"
+   ],
+   "type": "object"
+  },
+  "StageConditions": {
+   "anyOf": [
+    {
+     "additionalProperties": {
+      "$ref": "#/definitions/Conditions"
+     },
+     "defaultProperties": [],
+     "type": "object"
+    },
+    {
+     "$ref": "#/definitions/{and?:StageConditions;or?:StageConditions;}"
+    }
+   ]
+  },
+  "StageDo": {
+   "defaultProperties": [],
+   "properties": {
+    "exhaustVent": {
+     "$ref": "#/definitions/StageExhaustVent"
+    },
+    "fan": {
+     "$ref": "#/definitions/StageFan"
+    },
+    "heatingElements": {
+     "$ref": "#/definitions/StageHeatingElements"
+    },
+    "steamGenerators": {
+     "$ref": "#/definitions/StageSteamGenerators"
+    },
+    "temperatureBulbs": {
+     "$ref": "#/definitions/StageTemperatureBulbs"
+    },
+    "temperatureProbe": {
+     "$ref": "#/definitions/StageTemperatureProbe"
+    },
+    "timer": {
+     "$ref": "#/definitions/StageTimer"
+    },
+    "type": {
+     "$ref": "#/definitions/StageType"
+    }
+   },
+   "required": [
+    "fan",
+    "heatingElements",
+    "temperatureBulbs",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StageDryTemperatureBulb": {
+   "defaultProperties": [],
+   "properties": {
+    "dry": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    },
+    "mode": {
+     "enum": [
+      "dry"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "dry",
+    "mode"
+   ],
+   "type": "object"
+  },
+  "StageEntry": {
+   "defaultProperties": [],
+   "properties": {
+    "conditions": {
+     "$ref": "#/definitions/StageConditions"
+    }
+   },
+   "required": [
+    "conditions"
+   ],
+   "type": "object"
+  },
+  "StageExhaustVent": {
+   "defaultProperties": [],
+   "properties": {
+    "state": {
+     "enum": [
+      "closed",
+      "open-max",
+      "open-mid"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "state"
+   ],
+   "type": "object"
+  },
+  "StageExit": {
+   "defaultProperties": [],
+   "properties": {
+    "conditions": {
+     "$ref": "#/definitions/StageConditions"
+    }
+   },
+   "type": "object"
+  },
+  "StageFan": {
+   "defaultProperties": [],
+   "properties": {
+    "speed": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "speed"
+   ],
+   "type": "object"
+  },
+  "StageHeatingElements": {
+   "defaultProperties": [],
+   "properties": {
+    "bottom": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    },
+    "rear": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    },
+    "top": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "bottom",
+    "rear",
+    "top"
+   ],
+   "type": "object"
+  },
+  "StageRelativeHumiditySteamGenerator": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "relative-humidity"
+     ],
+     "type": "string"
+    },
+    "relativeHumidity": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "relativeHumidity"
+   ],
+   "type": "object"
+  },
+  "StageSteamGenerators": {
+   "else": {
+    "else": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "relative-humidity",
+        "steam-percentage"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "if": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "steam-percentage"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "then": {
+     "$ref": "#/definitions/StageSteamPercentageSteamGenerator"
+    }
+   },
+   "if": {
+    "properties": {
+     "mode": {
+      "enum": [
+       "relative-humidity"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "mode"
+    ]
+   },
+   "then": {
+    "$ref": "#/definitions/StageRelativeHumiditySteamGenerator"
+   }
+  },
+  "StageSteamPercentageSteamGenerator": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "steam-percentage"
+     ],
+     "type": "string"
+    },
+    "steamPercentage": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "steamPercentage"
+   ],
+   "type": "object"
+  },
+  "StageTemperatureBulbs": {
+   "else": {
+    "else": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "dry",
+        "wet"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "if": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "wet"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "then": {
+     "$ref": "#/definitions/StageWetTemperatureBulb"
+    }
+   },
+   "if": {
+    "properties": {
+     "mode": {
+      "enum": [
+       "dry"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "mode"
+    ]
+   },
+   "then": {
+    "$ref": "#/definitions/StageDryTemperatureBulb"
+   }
+  },
+  "StageTemperatureProbe": {
+   "defaultProperties": [],
+   "properties": {
+    "setpoint": {
+     "defaultProperties": [],
+     "properties": {
+      "celsius": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "celsius"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "setpoint"
+   ],
+   "type": "object"
+  },
+  "StageTimer": {
+   "defaultProperties": [],
+   "properties": {
+    "entry": {
+     "anyOf": [
+      {
+       "properties": {},
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/StageEntry"
+      }
+     ]
+    },
+    "initial": {
+     "type": "number"
+    },
+    "startType": {
+     "enum": [
+      "manual",
+      "on-detection",
+      "when-preheated"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "initial"
+   ],
+   "type": "object"
+  },
+  "StageType": {
+   "enum": [
+    "cook",
+    "stop"
+   ],
+   "type": "string"
+  },
+  "StageV2": {
+   "defaultProperties": [],
+   "properties": {
+    "description": {
+     "type": "string"
+    },
+    "do": {
+     "$ref": "#/definitions/StageDo"
+    },
+    "entry": {
+     "$ref": "#/definitions/StageEntry"
+    },
+    "exit": {
+     "$ref": "#/definitions/StageExit"
+    },
+    "id": {
+     "type": "string"
+    },
+    "photoUrl": {
+     "type": "string"
+    },
+    "preset": {
+     "type": "string"
+    },
+    "rackPosition": {
+     "type": "number"
+    },
+    "title": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "do",
+    "exit",
+    "id"
+   ],
+   "type": "object"
+  },
+  "StageWetTemperatureBulb": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "wet"
+     ],
+     "type": "string"
+    },
+    "wet": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "wet"
+   ],
+   "type": "object"
+  },
+  "StateV2": {
+   "defaultProperties": [],
+   "properties": {
+    "cavityOverheated": {
+     "type": "boolean"
+    },
+    "mode": {
+     "enum": [
+      "cook",
+      "descale",
+      "idle"
+     ],
+     "type": "string"
+    },
+    "processedCommandIds": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "temperatureUnit": {
+     "$ref": "#/definitions/TemperatureUnit"
+    }
+   },
+   "required": [
+    "cavityOverheated",
+    "mode",
+    "processedCommandIds",
+    "temperatureUnit"
+   ],
+   "type": "object"
+  },
+  "SteamGeneratorsNodeV2": {
+   "anyOf": [
+    {
+     "allOf": [
+      {
+       "$ref": "#/definitions/RelativeHumiditySteamGeneratorNodeV2"
+      },
+      {
+       "$ref": "#/definitions/EvaporatorSteamGeneratorNodeV2"
+      },
+      {
+       "$ref": "#/definitions/BoilerSteamGeneratorNodeV2"
+      }
+     ]
+    },
+    {
+     "allOf": [
+      {
+       "$ref": "#/definitions/IdleSteamGeneratorNode"
+      },
+      {
+       "$ref": "#/definitions/EvaporatorSteamGeneratorNodeV2"
+      },
+      {
+       "$ref": "#/definitions/BoilerSteamGeneratorNodeV2"
+      }
+     ]
+    },
+    {
+     "allOf": [
+      {
+       "$ref": "#/definitions/SteamPercentageSteamGeneratorNodeV2"
+      },
+      {
+       "$ref": "#/definitions/EvaporatorSteamGeneratorNodeV2"
+      },
+      {
+       "$ref": "#/definitions/BoilerSteamGeneratorNodeV2"
+      }
+     ]
+    }
+   ]
+  },
+  "SteamPercentageSteamGeneratorNodeV2": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "steam-percentage"
+     ],
+     "type": "string"
+    },
+    "steamPercentage": {
+     "defaultProperties": [],
+     "properties": {
+      "current": {
+       "type": "number"
+      },
+      "setpoint": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "steamPercentage"
+   ],
+   "type": "object"
+  },
+  "SystemInfoV2": {
+   "defaultProperties": [],
+   "properties": {
+    "deviceId": {
+     "type": "string"
+    },
+    "firmwareUpdatedTimestamp": {
+     "type": "string"
+    },
+    "firmwareVersion": {
+     "type": "string"
+    },
+    "flashFree": {
+     "type": "number"
+    },
+    "hardwareVersion": {
+     "type": "string"
+    },
+    "lastConnectedTimestamp": {
+     "type": "string"
+    },
+    "lastDisconnectedTimestamp": {
+     "type": "string"
+    },
+    "online": {
+     "type": "boolean"
+    },
+    "otaUpdate": {
+     "$ref": "#/definitions/OtaUpdateV2"
+    },
+    "powerHertz": {
+     "type": "number"
+    },
+    "powerMains": {
+     "type": "number"
+    },
+    "ramFree": {
+     "type": "number"
+    },
+    "releaseTrack": {
+     "type": "string"
+    },
+    "triacsFailed": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "deviceId",
+    "firmwareUpdatedTimestamp",
+    "firmwareVersion",
+    "hardwareVersion",
+    "lastConnectedTimestamp",
+    "lastDisconnectedTimestamp",
+    "online",
+    "powerHertz",
+    "powerMains",
+    "releaseTrack"
+   ],
+   "type": "object"
+  },
+  "TemperatureBulbsNodeV2": {
+   "else": {
+    "else": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "wet",
+        "dry"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "if": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "dry"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "then": {
+     "$ref": "#/definitions/DryTemperatureBulbNodeV2"
+    }
+   },
+   "if": {
+    "properties": {
+     "mode": {
+      "enum": [
+       "wet"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "mode"
+    ]
+   },
+   "then": {
+    "$ref": "#/definitions/WetTemperatureBulbNodeV2"
+   }
+  },
+  "TemperatureProbeNodeV2": {
+   "anyOf": [
+    {
+     "allOf": [
+      {
+       "$ref": "#/definitions/ConnectedTemperatureProbeNodeV2"
+      },
+      {
+       "defaultProperties": [],
+       "properties": {
+        "ntcConnected": {
+         "type": "boolean"
+        },
+        "setpoint": {
+         "defaultProperties": [],
+         "properties": {
+          "celsius": {
+           "type": "number"
+          }
+         },
+         "required": [
+          "celsius"
+         ],
+         "type": "object"
+        }
+       },
+       "required": [
+        "ntcConnected"
+       ],
+       "type": "object"
+      }
+     ]
+    },
+    {
+     "allOf": [
+      {
+       "$ref": "#/definitions/DisconnectedTemperatureProbeNode"
+      },
+      {
+       "defaultProperties": [],
+       "properties": {
+        "ntcConnected": {
+         "type": "boolean"
+        },
+        "setpoint": {
+         "defaultProperties": [],
+         "properties": {
+          "celsius": {
+           "type": "number"
+          }
+         },
+         "required": [
+          "celsius"
+         ],
+         "type": "object"
+        }
+       },
+       "required": [
+        "ntcConnected"
+       ],
+       "type": "object"
+      }
+     ]
+    }
+   ]
+  },
+  "TemperatureUnit": {
+   "enum": [
+    "C",
+    "F"
+   ],
+   "type": "string"
+  },
+  "TimerMode": {
+   "enum": [
+    "completed",
+    "idle",
+    "paused",
+    "running"
+   ],
+   "type": "string"
+  },
+  "TimerNodeV2": {
+   "defaultProperties": [],
+   "properties": {
+    "initial": {
+     "type": "number"
+    },
+    "mode": {
+     "$ref": "#/definitions/TimerMode"
+    },
+    "startedAtTimestamp": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "mode"
+   ],
+   "type": "object"
+  },
+  "WasteWaterTankNode": {
+   "defaultProperties": [],
+   "properties": {
+    "full": {
+     "type": "boolean"
+    },
+    "removed": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "full",
+    "removed"
+   ],
+   "type": "object"
+  },
+  "WaterTankNodeV2": {
+   "defaultProperties": [],
+   "properties": {
+    "empty": {
+     "type": "boolean"
+    },
+    "low": {
+     "type": "boolean"
+    },
+    "removed": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "empty",
+    "low",
+    "removed"
+   ],
+   "type": "object"
+  },
+  "WetTemperatureBulbNodeV2": {
+   "defaultProperties": [],
+   "properties": {
+    "dry": {
+     "defaultProperties": [],
+     "properties": {
+      "current": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      },
+      "numberOfOverCurrent": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "current",
+      "numberOfOverCurrent"
+     ],
+     "type": "object"
+    },
+    "dryBottom": {
+     "defaultProperties": [],
+     "properties": {
+      "current": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      },
+      "ntcConnected": {
+       "type": "boolean"
+      },
+      "numberOfOverCurrent": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "current",
+      "ntcConnected",
+      "numberOfOverCurrent"
+     ],
+     "type": "object"
+    },
+    "dryTop": {
+     "defaultProperties": [],
+     "properties": {
+      "current": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      },
+      "ntcConnected": {
+       "type": "boolean"
+      },
+      "numberOfOverCurrent": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "current",
+      "ntcConnected",
+      "numberOfOverCurrent"
+     ],
+     "type": "object"
+    },
+    "mode": {
+     "enum": [
+      "wet"
+     ],
+     "type": "string"
+    },
+    "wet": {
+     "defaultProperties": [],
+     "properties": {
+      "current": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      },
+      "dc12VInletStatus": {
+       "type": "string"
+      },
+      "dosed": {
+       "type": "boolean"
+      },
+      "ntcConnected": {
+       "type": "boolean"
+      },
+      "numberOfOverCurrent": {
+       "type": "number"
+      },
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "current",
+      "dc12VInletStatus",
+      "dosed",
+      "ntcConnected",
+      "numberOfOverCurrent"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "dry",
+    "dryBottom",
+    "dryTop",
+    "mode",
+    "wet"
+   ],
+   "type": "object"
+  },
+  "__type": {
+   "defaultProperties": [],
+   "type": "object"
+  },
+  "{and?:StageConditions;or?:StageConditions;}": {
+   "defaultProperties": [],
+   "properties": {
+    "and": {
+     "anyOf": [
+      {
+       "additionalProperties": {
+        "$ref": "#/definitions/Conditions"
+       },
+       "defaultProperties": [],
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/{and?:StageConditions;or?:StageConditions;}"
+      }
+     ]
+    },
+    "or": {
+     "anyOf": [
+      {
+       "additionalProperties": {
+        "$ref": "#/definitions/Conditions"
+       },
+       "defaultProperties": [],
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/{and?:StageConditions;or?:StageConditions;}"
+      }
+     ]
+    }
+   },
+   "type": "object"
+  }
+ },
+ "properties": {
+  "cook": {
+   "$ref": "#/definitions/CookV2"
+  },
+  "nodes": {
+   "$ref": "#/definitions/NodesV2"
+  },
+  "state": {
+   "$ref": "#/definitions/StateV2"
+  },
+  "systemInfo": {
+   "$ref": "#/definitions/SystemInfoV2"
+  },
+  "updatedTimestamp": {
+   "type": "string"
+  },
+  "version": {
+   "type": "number"
+  }
+ },
+ "required": [
+  "nodes",
+  "state",
+  "systemInfo",
+  "updatedTimestamp",
+  "version"
+ ],
+ "type": "object"
+}

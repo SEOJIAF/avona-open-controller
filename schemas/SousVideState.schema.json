@@ -1,0 +1,546 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "defaultProperties": [],
+ "definitions": {
+  "Conditions": {
+   "defaultProperties": [],
+   "properties": {
+    "<": {},
+    "<=": {},
+    "=": {},
+    ">": {},
+    ">=": {},
+    "equals": {},
+    "exists": {}
+   },
+   "type": "object"
+  },
+  "Cook": {
+   "defaultProperties": [],
+   "properties": {
+    "activeStageId": {
+     "type": "string"
+    },
+    "activeStageIndex": {
+     "type": "number"
+    },
+    "activeStageMode": {
+     "$ref": "#/definitions/StageMode"
+    },
+    "activeStageStartedTimestamp": {
+     "$ref": "#/definitions/Date"
+    },
+    "cookId": {
+     "type": "string"
+    },
+    "cookableId": {
+     "type": "string"
+    },
+    "cookableType": {
+     "$ref": "#/definitions/CookableType"
+    },
+    "originSource": {
+     "$ref": "#/definitions/DeviceSource"
+    },
+    "stageTransitionPendingUserAction": {
+     "type": "boolean"
+    },
+    "stages": {
+     "items": {
+      "$ref": "#/definitions/SousVideStage"
+     },
+     "type": "array"
+    },
+    "startedTimestamp": {
+     "$ref": "#/definitions/Date"
+    }
+   },
+   "required": [
+    "activeStageId",
+    "activeStageIndex",
+    "activeStageMode",
+    "activeStageStartedTimestamp",
+    "cookId",
+    "originSource",
+    "stageTransitionPendingUserAction",
+    "startedTimestamp"
+   ],
+   "type": "object"
+  },
+  "CookableType": {
+   "enum": [
+    "guide",
+    "ice-bath",
+    "manual",
+    "recipe",
+    "sous-vide-express"
+   ],
+   "type": "string"
+  },
+  "Date": {
+   "description": "Enables basic storage and retrieval of dates and times.",
+   "format": "date-time",
+   "type": "string"
+  },
+  "DeviceSource": {
+   "enum": [
+    "",
+    "android",
+    "api",
+    "hardware",
+    "ios",
+    "unknown"
+   ],
+   "type": "string"
+  },
+  "LowWaterNode": {
+   "defaultProperties": [],
+   "properties": {
+    "empty": {
+     "type": "boolean"
+    },
+    "warning": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "empty",
+    "warning"
+   ],
+   "type": "object"
+  },
+  "Metadata": {
+   "$ref": "#/definitions/__type"
+  },
+  "Nodes": {
+   "defaultProperties": [],
+   "properties": {
+    "lowWater": {
+     "$ref": "#/definitions/LowWaterNode"
+    },
+    "probe": {
+     "$ref": "#/definitions/ProbeNode"
+    },
+    "timer": {
+     "$ref": "#/definitions/TimerNode"
+    },
+    "waterTemperatureSensor": {
+     "$ref": "#/definitions/TemperatureSensorNode"
+    }
+   },
+   "required": [
+    "timer",
+    "waterTemperatureSensor"
+   ],
+   "type": "object"
+  },
+  "OTAUpdate": {
+   "anyOf": [
+    {
+     "defaultProperties": [],
+     "properties": {
+      "mode": {
+       "enum": [
+        "download",
+        "update"
+       ],
+       "type": "string"
+      },
+      "progress": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "mode",
+      "progress"
+     ],
+     "type": "object"
+    },
+    {
+     "defaultProperties": [],
+     "properties": {
+      "mode": {
+       "enum": [
+        "reboot"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ],
+     "type": "object"
+    },
+    {
+     "defaultProperties": [],
+     "properties": {
+      "mode": {
+       "enum": [
+        "rollback"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ],
+     "type": "object"
+    }
+   ]
+  },
+  "ProbeNode": {
+   "defaultProperties": [],
+   "properties": {
+    "connected": {
+     "type": "boolean"
+    },
+    "current": {
+     "$ref": "#/definitions/TemperatureCelsius"
+    },
+    "setpoint": {
+     "$ref": "#/definitions/TemperatureCelsius"
+    }
+   },
+   "required": [
+    "connected",
+    "current",
+    "setpoint"
+   ],
+   "type": "object"
+  },
+  "SousVideCookerMode": {
+   "enum": [
+    "cook",
+    "highTemp",
+    "idle",
+    "lowWater",
+    "motorStuck",
+    "waterLeak"
+   ],
+   "type": "string"
+  },
+  "SousVideStage": {
+   "defaultProperties": [],
+   "properties": {
+    "do": {
+     "$ref": "#/definitions/StageDo"
+    },
+    "entry": {
+     "$ref": "#/definitions/StageEntry"
+    },
+    "exit": {
+     "$ref": "#/definitions/StageExit"
+    },
+    "id": {
+     "type": "string"
+    },
+    "title": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "do",
+    "id",
+    "title"
+   ],
+   "type": "object"
+  },
+  "StageConditionsList": {
+   "$ref": "#/definitions/__type_1"
+  },
+  "StageDo": {
+   "defaultProperties": [],
+   "properties": {
+    "timer": {
+     "$ref": "#/definitions/StageTimer"
+    },
+    "type": {
+     "$ref": "#/definitions/StageType"
+    },
+    "waterTemperatureSensor": {
+     "$ref": "#/definitions/StageTemperatureSensor"
+    }
+   },
+   "required": [
+    "type",
+    "waterTemperatureSensor"
+   ],
+   "type": "object"
+  },
+  "StageEntry": {
+   "defaultProperties": [],
+   "properties": {
+    "conditions": {
+     "$ref": "#/definitions/StageConditionsList"
+    }
+   },
+   "required": [
+    "conditions"
+   ],
+   "type": "object"
+  },
+  "StageExit": {
+   "defaultProperties": [],
+   "properties": {
+    "conditions": {
+     "$ref": "#/definitions/StageConditionsList"
+    }
+   },
+   "required": [
+    "conditions"
+   ],
+   "type": "object"
+  },
+  "StageMode": {
+   "enum": [
+    "entering",
+    "running"
+   ],
+   "type": "string"
+  },
+  "StageTemperatureSensor": {
+   "defaultProperties": [],
+   "properties": {
+    "setpoint": {
+     "$ref": "#/definitions/TemperatureCelsius"
+    }
+   },
+   "required": [
+    "setpoint"
+   ],
+   "type": "object"
+  },
+  "StageTimer": {
+   "defaultProperties": [],
+   "properties": {
+    "entry": {
+     "$ref": "#/definitions/StageEntry"
+    },
+    "initial": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "initial"
+   ],
+   "type": "object"
+  },
+  "StageType": {
+   "enum": [
+    "cook",
+    "stop"
+   ],
+   "type": "string"
+  },
+  "State": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "$ref": "#/definitions/SousVideCookerMode"
+    },
+    "processedCommandIds": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "resumeAfterPowerInterruption": {
+     "type": "boolean"
+    },
+    "temperatureUnit": {
+     "$ref": "#/definitions/TemperatureUnit"
+    }
+   },
+   "required": [
+    "mode",
+    "processedCommandIds",
+    "temperatureUnit"
+   ],
+   "type": "object"
+  },
+  "SystemInfo": {
+   "defaultProperties": [],
+   "properties": {
+    "deviceId": {
+     "type": "string"
+    },
+    "firmwareUpdatedTimestamp": {
+     "$ref": "#/definitions/Date"
+    },
+    "firmwareVersion": {
+     "type": "string"
+    },
+    "hardwareVersion": {
+     "type": "string"
+    },
+    "lastConnectedTimestamp": {
+     "$ref": "#/definitions/Date"
+    },
+    "lastDisconnectedTimestamp": {
+     "$ref": "#/definitions/Date"
+    },
+    "online": {
+     "type": "boolean"
+    },
+    "otaUpdate": {
+     "$ref": "#/definitions/OTAUpdate"
+    },
+    "releaseTrack": {
+     "type": "string"
+    },
+    "triacsFailed": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "deviceId",
+    "firmwareUpdatedTimestamp",
+    "firmwareVersion",
+    "hardwareVersion",
+    "lastConnectedTimestamp",
+    "lastDisconnectedTimestamp",
+    "online",
+    "releaseTrack",
+    "triacsFailed"
+   ],
+   "type": "object"
+  },
+  "TemperatureCelsius": {
+   "defaultProperties": [],
+   "properties": {
+    "celsius": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "celsius"
+   ],
+   "type": "object"
+  },
+  "TemperatureSensorNode": {
+   "defaultProperties": [],
+   "properties": {
+    "current": {
+     "$ref": "#/definitions/TemperatureCelsius"
+    },
+    "enabled": {
+     "type": "boolean"
+    },
+    "setpoint": {
+     "$ref": "#/definitions/TemperatureCelsius"
+    }
+   },
+   "required": [
+    "current",
+    "setpoint"
+   ],
+   "type": "object"
+  },
+  "TemperatureUnit": {
+   "enum": [
+    "C",
+    "F"
+   ],
+   "type": "string"
+  },
+  "TimerMode": {
+   "enum": [
+    "completed",
+    "idle",
+    "paused",
+    "running"
+   ],
+   "type": "string"
+  },
+  "TimerNode": {
+   "defaultProperties": [],
+   "properties": {
+    "initial": {
+     "type": "number"
+    },
+    "mode": {
+     "$ref": "#/definitions/TimerMode"
+    },
+    "startedAtTimestamp": {
+     "$ref": "#/definitions/Date"
+    }
+   },
+   "required": [
+    "mode"
+   ],
+   "type": "object"
+  },
+  "__type": {
+   "additionalProperties": {
+    "type": "string"
+   },
+   "defaultProperties": [],
+   "type": "object"
+  },
+  "__type_1": {
+   "defaultProperties": [],
+   "properties": {
+    "and": {
+     "anyOf": [
+      {
+       "additionalProperties": {
+        "$ref": "#/definitions/Conditions"
+       },
+       "defaultProperties": [],
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/__type_1"
+      }
+     ]
+    },
+    "or": {
+     "anyOf": [
+      {
+       "additionalProperties": {
+        "$ref": "#/definitions/Conditions"
+       },
+       "defaultProperties": [],
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/__type_1"
+      }
+     ]
+    }
+   },
+   "type": "object"
+  }
+ },
+ "properties": {
+  "cook": {
+   "$ref": "#/definitions/Cook"
+  },
+  "metadata": {
+   "$ref": "#/definitions/Metadata"
+  },
+  "nodes": {
+   "$ref": "#/definitions/Nodes"
+  },
+  "state": {
+   "$ref": "#/definitions/State"
+  },
+  "systemInfo": {
+   "$ref": "#/definitions/SystemInfo"
+  },
+  "updatedTimestamp": {
+   "$ref": "#/definitions/Date"
+  },
+  "version": {
+   "type": "number"
+  }
+ },
+ "required": [
+  "nodes",
+  "state",
+  "systemInfo",
+  "updatedTimestamp",
+  "version"
+ ],
+ "type": "object"
+}

@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add a cooker · Open Avona</title>
+<style>
+  :root {
+    --bg: #f6f4f0; --card: #ffffff; --text: #1d1d1b; --muted: #6b6860; --line: #e2ded6;
+    --accent: #d2491f; --accent-text: #ffffff; --ok: #2e7d4f; --bad: #b3261e; --note: #fbefe2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161513; --card: #22201d; --text: #f2efe9; --muted: #a29d93; --line: #36332e;
+            --accent: #ff7a4d; --accent-text: #1a0d07; --ok: #6fcf97; --bad: #ff8a80; --note: #2d241c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  header a { color: var(--muted); font-size: .9rem; }
+  h1 { font-size: 1.4rem; margin: 0; }
+  h2 { font-size: 1.15rem; margin: 0 0 8px; }
+  .steps { display: flex; gap: 6px; margin-bottom: 16px; }
+  .steps span { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+  .steps span.done { background: var(--accent); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); font-size: .9rem; }
+  ul.req { margin: 0 0 16px; padding-left: 20px; color: var(--muted); font-size: .95rem; }
+  .code { font-size: 2.6rem; font-weight: 700; letter-spacing: .3em; text-align: center; margin: 16px 0;
+          font-variant-numeric: tabular-nums; }
+  .btn { display: block; width: 100%; padding: 11px; border-radius: 8px; border: 1px solid var(--line);
+         background: var(--bg); color: var(--text); font: inherit; cursor: pointer; text-align: center; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .btn + .btn { margin-top: 8px; }
+  .nets { display: grid; gap: 6px; margin: 4px 0 14px; }
+  .nets button { text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line);
+                 background: var(--bg); color: var(--text); font: inherit; cursor: pointer; }
+  .nets button[aria-pressed=true] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); margin-bottom: 12px; }
+  input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--line);
+          background: var(--bg); color: var(--text); font: inherit; }
+  .pw { display: grid; grid-template-columns: 1fr auto; gap: 6px; }
+  .pw button { padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg);
+               color: var(--muted); font: inherit; font-size: .85rem; cursor: pointer; }
+  .err { color: var(--bad); font-size: .9rem; min-height: 1.2em; margin: 0 0 10px; }
+  .note { background: var(--note); border-radius: 8px; padding: 10px 12px; font-size: .85rem; color: var(--muted); margin-top: 14px; }
+  .spinner { width: 28px; height: 28px; border: 3px solid var(--line); border-top-color: var(--accent);
+             border-radius: 50%; animation: spin 1s linear infinite; margin: 8px auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .success { color: var(--ok); font-weight: 600; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header><h1>Add a cooker</h1><a href="/">Back to my cookers</a></header>
+  <div class="steps" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+
+  <a class="card" href="/setup-wifi" style="display:block;margin-bottom:16px;text-decoration:none;color:inherit">
+    <h2>Precision Cooker Wi‑Fi (model AN500) or Pro Wi‑Fi?</h2>
+    <p class="muted" style="margin:0">Those are set up through the cooker's own Wi‑Fi, not Bluetooth. <span style="color:var(--accent);font-weight:600">Use Wi‑Fi setup →</span></p>
+  </a>
+
+  <section class="card" data-step="intro">
+    <h2>Find your 3.0-generation cooker</h2>
+    <p>This sets up a Precision Cooker 3.0, Nano 3.0, Mini/Lite or Pro 3.0 the same way the Anova app does.</p>
+    <ul class="req">
+      <li>Plug the cooker in and keep it within a few metres of this device.</li>
+      <li>Use Chrome or Edge with Bluetooth turned on.</li>
+      <li>Have your 2.4 GHz Wi‑Fi name and password ready.</li>
+    </ul>
+    <p><strong>Put the cooker in pairing mode</strong> (a new cooker usually is already, right after plugging in):</p>
+    <ul class="req">
+      <li>Precision Cooker 3.0 / Nano 3.0: press and hold the <b>timer</b> and <b>–</b> icons for 10 seconds.</li>
+      <li>Mini / Lite: press and hold the button for 10 seconds until the LED blinks.</li>
+      <li>Pro 3.0: open the Wi‑Fi menu on the cooker's display.</li>
+    </ul>
+    <p class="err" id="unsupported" hidden>This browser can't use Bluetooth. Open this page in Chrome or Edge (Android, Windows, macOS or ChromeOS) over HTTPS or localhost.</p>
+    <button class="btn primary" id="find">Find my cooker</button>
+    <p class="note" id="mock-note" hidden>Mock mode: a simulated cooker answers instead of real Bluetooth, and nothing is sent to Anova.</p>
+  </section>
+
+  <section class="card" data-step="connecting" hidden>
+    <div class="spinner"></div>
+    <h2 id="connecting-title">Connecting…</h2>
+    <p class="muted">Keep the cooker close. Your device may ask to pair with it; accept that.</p>
+  </section>
+
+  <section class="card" data-step="confirm" hidden>
+    <h2>Confirm it's your cooker</h2>
+    <div id="confirm-code">
+      <p>Does this code match the code shown on your cooker?</p>
+      <div class="code" id="code">----</div>
+      <p>If it does, press any button on your cooker to confirm.</p>
+    </div>
+    <div id="confirm-led" hidden>
+      <p>Is the LED blinking on your Mini/Lite?</p>
+      <p>If yes, press the button on top of the cooker to confirm.</p>
+    </div>
+    <div class="spinner"></div>
+    <button class="btn" id="mock-press" hidden>Simulate pressing “start” on the cooker</button>
+  </section>
+
+  <section class="card" data-step="wifi" hidden>
+    <h2>Connect your cooker to Wi‑Fi</h2>
+    <p class="muted" id="scan-status">Looking for networks…</p>
+    <div class="nets" id="nets"></div>
+    <form id="wifi-form">
+      <label>Network name <input name="ssid" autocomplete="off" autocapitalize="none" required></label>
+      <label>Password
+        <span class="pw"><input name="password" type="password" autocomplete="off"><button type="button" id="toggle-pw">Show</button></span>
+      </label>
+      <p class="err" id="wifi-err" role="alert"></p>
+      <button class="btn primary" type="submit">Continue</button>
+      <button class="btn" type="button" id="rescan">Scan again</button>
+    </form>
+  </section>
+
+  <section class="card" data-step="working" hidden>
+    <div class="spinner"></div>
+    <h2 id="working-title">Connecting to Wi‑Fi</h2>
+    <p class="muted" id="working-text"></p>
+  </section>
+
+  <section class="card" data-step="done" hidden>
+    <h2 class="success">Connected!</h2>
+    <p id="done-text"></p>
+    <a class="btn primary" href="/">Start cooking</a>
+  </section>
+
+  <section class="card" data-step="error" hidden>
+    <h2>Setup didn't finish</h2>
+    <p class="err" id="error-text"></p>
+    <p class="muted">Unplug the cooker for a few seconds, plug it back in, and try again.</p>
+    <button class="btn primary" id="restart">Start over</button>
+  </section>
+</main>
+<script type="module">
+import { Gen3Cooker, PRODUCT_NAMES } from '/gen3-ble.js';
+
+const $ = (s) => document.querySelector(s);
+const STEP_ORDER = ['intro', 'connecting', 'confirm', 'wifi', 'working', 'done'];
+let cooker, me, config, productName = 'cooker';
+
+function show(step) {
+  document.querySelectorAll('[data-step]').forEach((el) => (el.hidden = el.dataset.step !== step));
+  const idx = STEP_ORDER.indexOf(step);
+  document.querySelectorAll('.steps span').forEach((el, i) => el.classList.toggle('done', idx >= 0 && i < idx));
+}
+
+function fail(err) {
+  console.error(err);
+  cooker?.disconnect();
+  const msg = err?.name === 'NotFoundError' ? 'No cooker was chosen. Make sure it is plugged in and nearby.' : err?.message ?? String(err);
+  $('#error-text').textContent = msg;
+  show('error');
+}
+
+async function init() {
+  const meRes = await fetch('/api/me');
+  if (meRes.status === 401) return location.replace('/login');
+  me = await meRes.json();
+  config = await (await fetch('/api/config')).json();
+  let bluetooth = navigator.bluetooth;
+  if (config.mock) {
+    bluetooth = (await import('/mock-bluetooth.js')).mockBluetooth;
+    $('#mock-note').hidden = false;
+  }
+  cooker = new Gen3Cooker(bluetooth);
+  if (!Gen3Cooker.isSupported(bluetooth)) {
+    $('#unsupported').hidden = false;
+    $('#find').disabled = true;
+  }
+}
+
+$('#find').addEventListener('click', async () => {
+  try {
+    await cooker.choose();
+    $('#connecting-title').textContent = `Connecting to ${cooker.device.name ?? 'your cooker'}…`;
+    show('connecting');
+    await cooker.connect();
+    await cooker.hello();
+    productName = PRODUCT_NAMES[cooker.productType] ?? 'cooker';
+    await confirmOwnership();
+    show('wifi');
+    scan();
+  } catch (err) {
+    fail(err);
+  }
+});
+
+async function confirmOwnership() {
+  const isMini = cooker.productType === 'a8';
+  $('#confirm-led').hidden = !isMini;
+  $('#confirm-code').hidden = isMini;
+  if (!isMini) $('#code').textContent = (await cooker.readCode()) ?? '----';
+  $('#mock-press').hidden = !config.mock;
+  show('confirm');
+  await cooker.waitForButtonPress();
+}
+$('#mock-press').addEventListener('click', () => cooker.bluetooth.lastDevice?.pressButton('start'));
+
+async function scan() {
+  const nets = $('#nets');
+  nets.innerHTML = '';
+  $('#scan-status').textContent = 'Looking for networks…';
+  try {
+    const ssids = await cooker.scanNetworks();
+    $('#scan-status').textContent = ssids.length
+      ? `Choose the network your ${productName} should use, or type its name.`
+      : 'No networks found. Type the network name below.';
+    for (const ssid of ssids) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = ssid;
+      b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => {
+        nets.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        $('#wifi-form').ssid.value = ssid;
+        $('#wifi-form').password.focus();
+      });
+      nets.appendChild(b);
+    }
+  } catch (err) {
+    $('#scan-status').textContent = `Scan failed (${err.message}). Type the network name below.`;
+  }
+}
+$('#rescan').addEventListener('click', scan);
+$('#toggle-pw').addEventListener('click', () => {
+  const pw = $('#wifi-form').password;
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+  $('#toggle-pw').textContent = pw.type === 'password' ? 'Show' : 'Hide';
+});
+
+function working(title, text) {
+  $('#working-title').textContent = title;
+  $('#working-text').textContent = text;
+  show('working');
+}
+
+$('#wifi-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const ssid = form.ssid.value.trim();
+  $('#wifi-err').textContent = '';
+  if (!ssid) return ($('#wifi-err').textContent = 'Choose or type a network name.');
+  try {
+    working('Connecting to Wi‑Fi', `Your ${productName} is now connecting to ${ssid}. This may take a minute.`);
+    try {
+      await cooker.connectToWifi(ssid, form.password.value);
+    } catch (err) {
+      if (err.status === 'failure') {
+        show('wifi');
+        $('#wifi-err').textContent = 'Incorrect password. Try again.';
+        return;
+      }
+      throw err;
+    }
+    if (!me.uid) throw new Error('Your account ID is unknown. Sign out and sign in again.');
+    working('Linking to your account', `Adding the ${productName} to ${me.email}.`);
+    await cooker.pairUser(me.uid);
+    working('Finishing setup', 'Almost done.');
+    await cooker.finish();
+    cooker.disconnect();
+    working('Waiting for your cooker to come online', 'It is joining your Wi‑Fi and checking in with Anova. This can take a minute or two.');
+    await waitForCloud(cooker.info?.deviceId);
+    $('#done-text').textContent = `Your ${productName} is ready to cook from this page.`;
+    show('done');
+  } catch (err) {
+    fail(err);
+  }
+});
+
+// The cooker shows up in the account once it reaches the Anova cloud (EVENT_APC_WIFI_ADDED / LIST).
+function waitForCloud(deviceId) {
+  return new Promise((resolve, reject) => {
+    const es = new EventSource('/api/events');
+    let known = null;
+    const timer = setTimeout(() => {
+      es.close();
+      reject(new Error('The cooker finished Bluetooth setup but has not appeared in your account yet. Check that it shows a Wi‑Fi icon, then open your cookers list again in a few minutes.'));
+    }, 180_000);
+    const check = (list) => {
+      const ids = list.map((d) => d.cookerId);
+      if (known === null) known = new Set(ids);
+      if (ids.some((id) => id === deviceId || !known.has(id))) {
+        clearTimeout(timer);
+        es.close();
+        resolve();
+      }
+    };
+    es.addEventListener('devices', (ev) => check(JSON.parse(ev.data)));
+  });
+}
+
+$('#restart').addEventListener('click', () => location.reload());
+init().catch(fail);
+</script>
+</body>
+</html>

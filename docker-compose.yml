@@ -1,0 +1,36 @@
+# open-avona web app.
+#   docker compose up -d --build      -> http://localhost:8080
+#
+# Published on localhost only. To reach it from other devices, put it behind HTTPS (a reverse proxy, or
+# TLS_CERT/TLS_KEY below) and change the port binding.
+#
+# First-time setup of an older Wi-Fi cooker (Precision Cooker Wi-Fi AN500, Pro Wi-Fi) has to talk to the
+# cooker's own hotspot, which this bridged container can't do. Either run `node server.mjs` on the host for
+# that one step, or use the `host-network` variant at the bottom (Linux only).
+services:
+  open-avona:
+    build: ./webapp
+    image: open-avona:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      # COOKIE_SECURE: "1"            # when served over HTTPS by a reverse proxy
+      # TLS_CERT: /certs/server.crt   # serve HTTPS directly (see webapp/tools/make-local-https.sh)
+      # TLS_KEY: /certs/server.key
+      # ANOVA_WS_LOG: /tmp/ws.log     # debug: log raw cloud messages
+      PORT: "8080"
+    # volumes:
+    #   - ./webapp/certs:/certs:ro
+
+  # Same server on the host's network, so it can reach a cooker's setup hotspot (10.123.45.1) after you
+  # join that Wi-Fi on the host. Start with:  docker compose --profile host-network up -d --build open-avona-host
+  open-avona-host:
+    profiles: ["host-network"]
+    build: ./webapp
+    image: open-avona:latest
+    restart: "no"
+    network_mode: host
+    environment:
+      HOST: "127.0.0.1"
+      PORT: "8080"

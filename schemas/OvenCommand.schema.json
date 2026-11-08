@@ -1,0 +1,2932 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "defaultProperties": [],
+ "definitions": {
+  "APOCommandType": {
+   "enum": [
+    "AUTH_TOKEN_V2",
+    "CMD_APO_ABORT_DESCALE",
+    "CMD_APO_DISCONNECT",
+    "CMD_APO_GET_CONFIGURATION",
+    "CMD_APO_HEALTHCHECK",
+    "CMD_APO_NAME_WIFI_DEVICE",
+    "CMD_APO_OTA",
+    "CMD_APO_REGISTER_PUSH_TOKEN",
+    "CMD_APO_REPORT_LOGS",
+    "CMD_APO_REQUEST_DIAGNOSTIC",
+    "CMD_APO_SET_BOILER_TIME",
+    "CMD_APO_SET_CONFIGURATION",
+    "CMD_APO_SET_FAN",
+    "CMD_APO_SET_HEATING_ELEMENTS",
+    "CMD_APO_SET_IMAGE_ANALYSIS",
+    "CMD_APO_SET_LAMP",
+    "CMD_APO_SET_LAMP_PREFERENCE",
+    "CMD_APO_SET_METADATA",
+    "CMD_APO_SET_PROBE",
+    "CMD_APO_SET_REPORT_STATE_RATE",
+    "CMD_APO_SET_REPORT_STATE_RATE_DEFAULT",
+    "CMD_APO_SET_STEAM_GENERATORS",
+    "CMD_APO_SET_SUBSCRIPTION",
+    "CMD_APO_SET_TEMPERATURE_BULBS",
+    "CMD_APO_SET_TEMPERATURE_UNIT",
+    "CMD_APO_SET_TIMER",
+    "CMD_APO_SET_TIME_ZONE",
+    "CMD_APO_SET_VENT",
+    "CMD_APO_START",
+    "CMD_APO_START_DESCALE",
+    "CMD_APO_START_LIVE_STREAM",
+    "CMD_APO_START_STAGE",
+    "CMD_APO_STOP",
+    "CMD_APO_STOP_LIVE_STREAM",
+    "CMD_APO_UPDATE_COOK_STAGE",
+    "CMD_APO_UPDATE_COOK_STAGES"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.AUTH_TOKEN_V2": {
+   "enum": [
+    "AUTH_TOKEN_V2"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_ABORT_DESCALE": {
+   "enum": [
+    "CMD_APO_ABORT_DESCALE"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_DISCONNECT": {
+   "enum": [
+    "CMD_APO_DISCONNECT"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_GET_CONFIGURATION": {
+   "enum": [
+    "CMD_APO_GET_CONFIGURATION"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_HEALTHCHECK": {
+   "enum": [
+    "CMD_APO_HEALTHCHECK"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_NAME_WIFI_DEVICE": {
+   "enum": [
+    "CMD_APO_NAME_WIFI_DEVICE"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_OTA": {
+   "enum": [
+    "CMD_APO_OTA"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_REGISTER_PUSH_TOKEN": {
+   "enum": [
+    "CMD_APO_REGISTER_PUSH_TOKEN"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_REPORT_LOGS": {
+   "enum": [
+    "CMD_APO_REPORT_LOGS"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_REQUEST_DIAGNOSTIC": {
+   "enum": [
+    "CMD_APO_REQUEST_DIAGNOSTIC"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_BOILER_TIME": {
+   "enum": [
+    "CMD_APO_SET_BOILER_TIME"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_CONFIGURATION": {
+   "enum": [
+    "CMD_APO_SET_CONFIGURATION"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_FAN": {
+   "enum": [
+    "CMD_APO_SET_FAN"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_HEATING_ELEMENTS": {
+   "enum": [
+    "CMD_APO_SET_HEATING_ELEMENTS"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_IMAGE_ANALYSIS": {
+   "enum": [
+    "CMD_APO_SET_IMAGE_ANALYSIS"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_LAMP": {
+   "enum": [
+    "CMD_APO_SET_LAMP"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_LAMP_PREFERENCE": {
+   "enum": [
+    "CMD_APO_SET_LAMP_PREFERENCE"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_METADATA": {
+   "enum": [
+    "CMD_APO_SET_METADATA"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_PROBE": {
+   "enum": [
+    "CMD_APO_SET_PROBE"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_REPORT_STATE_RATE": {
+   "enum": [
+    "CMD_APO_SET_REPORT_STATE_RATE"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_REPORT_STATE_RATE_DEFAULT": {
+   "enum": [
+    "CMD_APO_SET_REPORT_STATE_RATE_DEFAULT"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_STEAM_GENERATORS": {
+   "enum": [
+    "CMD_APO_SET_STEAM_GENERATORS"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_SUBSCRIPTION": {
+   "enum": [
+    "CMD_APO_SET_SUBSCRIPTION"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_TEMPERATURE_BULBS": {
+   "enum": [
+    "CMD_APO_SET_TEMPERATURE_BULBS"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_TEMPERATURE_UNIT": {
+   "enum": [
+    "CMD_APO_SET_TEMPERATURE_UNIT"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_TIMER": {
+   "enum": [
+    "CMD_APO_SET_TIMER"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_TIME_ZONE": {
+   "enum": [
+    "CMD_APO_SET_TIME_ZONE"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_SET_VENT": {
+   "enum": [
+    "CMD_APO_SET_VENT"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_START": {
+   "enum": [
+    "CMD_APO_START"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_START_DESCALE": {
+   "enum": [
+    "CMD_APO_START_DESCALE"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_START_LIVE_STREAM": {
+   "enum": [
+    "CMD_APO_START_LIVE_STREAM"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_START_STAGE": {
+   "enum": [
+    "CMD_APO_START_STAGE"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_STOP": {
+   "enum": [
+    "CMD_APO_STOP"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_STOP_LIVE_STREAM": {
+   "enum": [
+    "CMD_APO_STOP_LIVE_STREAM"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_UPDATE_COOK_STAGE": {
+   "enum": [
+    "CMD_APO_UPDATE_COOK_STAGE"
+   ],
+   "type": "string"
+  },
+  "APOCommandType.CMD_APO_UPDATE_COOK_STAGES": {
+   "enum": [
+    "CMD_APO_UPDATE_COOK_STAGES"
+   ],
+   "type": "string"
+  },
+  "AbortDescaleCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_ABORT_DESCALE"
+    }
+   },
+   "required": [
+    "id",
+    "type"
+   ],
+   "type": "object"
+  },
+  "AuthTokenV2": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "platform": {
+       "type": "string"
+      },
+      "supportedAccessories": {
+       "items": {
+        "type": "string"
+       },
+       "type": "array"
+      },
+      "token": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "platform",
+      "supportedAccessories",
+      "token"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.AUTH_TOKEN_V2"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "CloudflareSrtPayload": {
+   "defaultProperties": [],
+   "properties": {
+    "srt": {
+     "defaultProperties": [],
+     "properties": {
+      "passphrase": {
+       "type": "string"
+      },
+      "streamId": {
+       "type": "string"
+      },
+      "url": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "passphrase",
+      "streamId",
+      "url"
+     ],
+     "type": "object"
+    },
+    "webRTC": {
+     "defaultProperties": [],
+     "properties": {
+      "url": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "url"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "srt",
+    "webRTC"
+   ],
+   "type": "object"
+  },
+  "Conditions": {
+   "defaultProperties": [],
+   "properties": {
+    "<": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "<=": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "=": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    ">": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    ">=": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "equals": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "exists": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    }
+   },
+   "type": "object"
+  },
+  "CookingStage": {
+   "defaultProperties": [],
+   "properties": {
+    "description": {
+     "type": "string"
+    },
+    "fan": {
+     "$ref": "#/definitions/StageFan"
+    },
+    "heatingElements": {
+     "$ref": "#/definitions/StageHeatingElements"
+    },
+    "id": {
+     "type": "string"
+    },
+    "photoUrl": {
+     "type": "string"
+    },
+    "probeAdded": {
+     "type": "boolean"
+    },
+    "rackPosition": {
+     "$ref": "#/definitions/StageRackPosition"
+    },
+    "steamGenerators": {
+     "$ref": "#/definitions/StageSteamGenerators"
+    },
+    "temperatureBulbs": {
+     "$ref": "#/definitions/StageTemperatureBulbs"
+    },
+    "temperatureProbe": {
+     "$ref": "#/definitions/StageTemperatureProbe"
+    },
+    "timer": {
+     "$ref": "#/definitions/StageTimer"
+    },
+    "title": {
+     "type": [
+      "string",
+      "number"
+     ]
+    },
+    "type": {
+     "$ref": "#/definitions/StageType"
+    },
+    "userActionRequired": {
+     "type": "boolean"
+    },
+    "vent": {
+     "$ref": "#/definitions/StageVent"
+    },
+    "videoThumbnailUrl": {
+     "type": "string"
+    },
+    "videoUrl": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "fan",
+    "heatingElements",
+    "id",
+    "temperatureBulbs",
+    "type",
+    "userActionRequired",
+    "vent"
+   ],
+   "type": "object"
+  },
+  "Date": {
+   "description": "Enables basic storage and retrieval of dates and times.",
+   "format": "date-time",
+   "type": "string"
+  },
+  "DisconnectCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "userId": {
+       "type": "string"
+      }
+     },
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_DISCONNECT"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "GetConfiguration": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "properties": {},
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_GET_CONFIGURATION"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "HealthCheck": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_HEALTHCHECK"
+    }
+   },
+   "required": [
+    "id",
+    "type"
+   ],
+   "type": "object"
+  },
+  "ImageAnalysis": {
+   "defaultProperties": [],
+   "properties": {
+    "categories": {
+     "items": {
+      "defaultProperties": [],
+      "properties": {
+       "category": {
+        "type": "string"
+       },
+       "categoryId": {
+        "type": "number"
+       },
+       "confidence": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "category",
+       "categoryId",
+       "confidence"
+      ],
+      "type": "object"
+     },
+     "type": "array"
+    },
+    "condensation": {
+     "type": "boolean"
+    },
+    "food_detected": {
+     "type": "boolean"
+    },
+    "is_dirty": {
+     "type": "boolean"
+    },
+    "is_empty": {
+     "type": "boolean"
+    },
+    "is_obstructed": {
+     "type": "boolean"
+    },
+    "rack_position": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "categories",
+    "condensation",
+    "food_detected",
+    "is_dirty",
+    "is_empty",
+    "is_obstructed",
+    "rack_position"
+   ],
+   "type": "object"
+  },
+  "NameWifiDeviceCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "name": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "name"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_NAME_WIFI_DEVICE"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "OvenCommand": {
+   "anyOf": [
+    {
+     "$ref": "#/definitions/SetFanCommand"
+    },
+    {
+     "$ref": "#/definitions/SetHeatingElementsCommand"
+    },
+    {
+     "$ref": "#/definitions/SetLampCommand"
+    },
+    {
+     "$ref": "#/definitions/SetLampPreferenceCommand"
+    },
+    {
+     "$ref": "#/definitions/SetProbeCommand"
+    },
+    {
+     "$ref": "#/definitions/SetSteamGeneratorsCommand"
+    },
+    {
+     "$ref": "#/definitions/SetTemperatureBulbsCommand"
+    },
+    {
+     "$ref": "#/definitions/SetTemperatureUnitCommand"
+    },
+    {
+     "$ref": "#/definitions/SetTimerCommand"
+    },
+    {
+     "$ref": "#/definitions/SetVentCommand"
+    },
+    {
+     "$ref": "#/definitions/StartCookCommand"
+    },
+    {
+     "$ref": "#/definitions/StartDescaleCommand"
+    },
+    {
+     "$ref": "#/definitions/AbortDescaleCommand"
+    },
+    {
+     "$ref": "#/definitions/StartFirmwareUpdateCommand"
+    },
+    {
+     "$ref": "#/definitions/StartStageCommand"
+    },
+    {
+     "$ref": "#/definitions/StopCookCommand"
+    },
+    {
+     "$ref": "#/definitions/UpdateCookStageCommand"
+    },
+    {
+     "$ref": "#/definitions/UpdateCookStagesCommand"
+    },
+    {
+     "$ref": "#/definitions/SetReportStateRate"
+    },
+    {
+     "$ref": "#/definitions/SetReportStateRateDefault"
+    },
+    {
+     "$ref": "#/definitions/SetBoilerTime"
+    },
+    {
+     "$ref": "#/definitions/AuthTokenV2"
+    },
+    {
+     "$ref": "#/definitions/HealthCheck"
+    },
+    {
+     "$ref": "#/definitions/SetMetadataCommand"
+    },
+    {
+     "$ref": "#/definitions/GetConfiguration"
+    },
+    {
+     "$ref": "#/definitions/SetConfiguration"
+    },
+    {
+     "$ref": "#/definitions/NameWifiDeviceCommand"
+    },
+    {
+     "$ref": "#/definitions/DisconnectCommand"
+    },
+    {
+     "$ref": "#/definitions/RequestDiagnosticsCommand"
+    },
+    {
+     "$ref": "#/definitions/RegisterPushTokenCommand"
+    },
+    {
+     "$ref": "#/definitions/SetTimeZoneCommand"
+    },
+    {
+     "$ref": "#/definitions/StartLiveStreamCommand"
+    },
+    {
+     "$ref": "#/definitions/StopLiveStreamCommand"
+    },
+    {
+     "$ref": "#/definitions/SetSubscriptionCommand"
+    },
+    {
+     "$ref": "#/definitions/SetImageAnalysisCommand"
+    },
+    {
+     "$ref": "#/definitions/ReportLogsCommand"
+    }
+   ]
+  },
+  "Record": {
+   "$ref": "#/definitions/__type"
+  },
+  "RegisterPushTokenCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "appId": {
+       "type": "string"
+      },
+      "platform": {
+       "type": "string"
+      },
+      "token": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "appId",
+      "platform",
+      "token"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_REGISTER_PUSH_TOKEN"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "ReportLogsCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_REPORT_LOGS"
+    }
+   },
+   "required": [
+    "id",
+    "type"
+   ],
+   "type": "object"
+  },
+  "RequestDiagnosticsCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "command": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "command"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_REQUEST_DIAGNOSTIC"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetBoilerTime": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "time": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "time"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_BOILER_TIME"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetConfiguration": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "expiresAt": {
+       "$ref": "#/definitions/Date"
+      },
+      "token": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "expiresAt",
+      "token"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_CONFIGURATION"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetFanCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "speed": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "speed"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_FAN"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetHeatingElementsCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "bottom": {
+       "defaultProperties": [],
+       "properties": {
+        "on": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "on"
+       ],
+       "type": "object"
+      },
+      "rear": {
+       "defaultProperties": [],
+       "properties": {
+        "on": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "on"
+       ],
+       "type": "object"
+      },
+      "top": {
+       "defaultProperties": [],
+       "properties": {
+        "on": {
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "on"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "bottom",
+      "rear",
+      "top"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_HEATING_ELEMENTS"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetImageAnalysisCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "$ref": "#/definitions/ImageAnalysis"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_IMAGE_ANALYSIS"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetLampCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_LAMP"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetLampPreferenceCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_LAMP_PREFERENCE"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetMetadataCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "metadata": {
+       "$ref": "#/definitions/Record"
+      }
+     },
+     "required": [
+      "metadata"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_METADATA"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetProbeCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "$ref": "#/definitions/SetProbeCommandPayload"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_PROBE"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetProbeCommandPayload": {
+   "anyOf": [
+    {
+     "$ref": "#/definitions/SetProbeCommandPayloadV1"
+    },
+    {
+     "$ref": "#/definitions/SetProbeCommandPayloadV2"
+    }
+   ]
+  },
+  "SetProbeCommandPayloadV1": {
+   "defaultProperties": [],
+   "properties": {
+    "setpoint": {
+     "defaultProperties": [],
+     "properties": {
+      "celsius": {
+       "type": "number"
+      },
+      "fahrenheit": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "celsius",
+      "fahrenheit"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "setpoint"
+   ],
+   "type": "object"
+  },
+  "SetProbeCommandPayloadV2": {
+   "defaultProperties": [],
+   "properties": {
+    "setpoint": {
+     "defaultProperties": [],
+     "properties": {
+      "celsius": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "celsius"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "setpoint"
+   ],
+   "type": "object"
+  },
+  "SetReportStateRate": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "cooking": {
+       "type": "number"
+      },
+      "idle": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "cooking",
+      "idle"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_REPORT_STATE_RATE"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetReportStateRateDefault": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_REPORT_STATE_RATE_DEFAULT"
+    }
+   },
+   "required": [
+    "id",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetSteamGeneratorsCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "anyOf": [
+      {
+       "defaultProperties": [],
+       "properties": {
+        "mode": {
+         "enum": [
+          "relative-humidity"
+         ],
+         "type": "string"
+        },
+        "relativeHumidity": {
+         "defaultProperties": [],
+         "properties": {
+          "setpoint": {
+           "type": "number"
+          }
+         },
+         "required": [
+          "setpoint"
+         ],
+         "type": "object"
+        }
+       },
+       "required": [
+        "mode",
+        "relativeHumidity"
+       ],
+       "type": "object"
+      },
+      {
+       "defaultProperties": [],
+       "properties": {
+        "mode": {
+         "enum": [
+          "steam-percentage"
+         ],
+         "type": "string"
+        },
+        "steamPercentage": {
+         "defaultProperties": [],
+         "properties": {
+          "setpoint": {
+           "type": "number"
+          }
+         },
+         "required": [
+          "setpoint"
+         ],
+         "type": "object"
+        }
+       },
+       "required": [
+        "mode",
+        "steamPercentage"
+       ],
+       "type": "object"
+      }
+     ]
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_STEAM_GENERATORS"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetSubscriptionCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "expirationUnixTimestamp": {
+       "type": "number"
+      },
+      "subscribed": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "expirationUnixTimestamp",
+      "subscribed"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_SUBSCRIPTION"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetTemperatureBulbsCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "$ref": "#/definitions/SetTemperatureBulbsCommandPayload"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_TEMPERATURE_BULBS"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetTemperatureBulbsCommandPayload": {
+   "anyOf": [
+    {
+     "$ref": "#/definitions/SetTemperatureBulbsCommandPayloadWetV1"
+    },
+    {
+     "$ref": "#/definitions/SetTemperatureBulbsCommandPayloadDryV1"
+    },
+    {
+     "$ref": "#/definitions/SetTemperatureBulbsCommandPayloadWetV2"
+    },
+    {
+     "$ref": "#/definitions/SetTemperatureBulbsCommandPayloadDryV2"
+    }
+   ]
+  },
+  "SetTemperatureBulbsCommandPayloadDryV1": {
+   "defaultProperties": [],
+   "properties": {
+    "dry": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "anyOf": [
+        {
+         "defaultProperties": [],
+         "properties": {
+          "fahrenheit": {
+           "type": "number"
+          }
+         },
+         "required": [
+          "fahrenheit"
+         ],
+         "type": "object"
+        },
+        {
+         "defaultProperties": [],
+         "properties": {
+          "celsius": {
+           "type": "number"
+          }
+         },
+         "required": [
+          "celsius"
+         ],
+         "type": "object"
+        }
+       ]
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    },
+    "mode": {
+     "enum": [
+      "dry"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "dry",
+    "mode"
+   ],
+   "type": "object"
+  },
+  "SetTemperatureBulbsCommandPayloadDryV2": {
+   "defaultProperties": [],
+   "properties": {
+    "dry": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    },
+    "mode": {
+     "enum": [
+      "dry"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "dry",
+    "mode"
+   ],
+   "type": "object"
+  },
+  "SetTemperatureBulbsCommandPayloadWetV1": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "wet"
+     ],
+     "type": "string"
+    },
+    "wet": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "anyOf": [
+        {
+         "defaultProperties": [],
+         "properties": {
+          "fahrenheit": {
+           "type": "number"
+          }
+         },
+         "required": [
+          "fahrenheit"
+         ],
+         "type": "object"
+        },
+        {
+         "defaultProperties": [],
+         "properties": {
+          "celsius": {
+           "type": "number"
+          }
+         },
+         "required": [
+          "celsius"
+         ],
+         "type": "object"
+        }
+       ]
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "wet"
+   ],
+   "type": "object"
+  },
+  "SetTemperatureBulbsCommandPayloadWetV2": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "wet"
+     ],
+     "type": "string"
+    },
+    "wet": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "wet"
+   ],
+   "type": "object"
+  },
+  "SetTemperatureUnitCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "temperatureUnit": {
+       "$ref": "#/definitions/TemperatureUnit"
+      }
+     },
+     "required": [
+      "temperatureUnit"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_TEMPERATURE_UNIT"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetTimeZoneCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "time_zone": {
+       "defaultProperties": [],
+       "properties": {
+        "code": {
+         "type": "string"
+        },
+        "gmt_offset": {
+         "type": "number"
+        },
+        "id": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "code",
+        "gmt_offset",
+        "id"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "time_zone"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_TIME_ZONE"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetTimerCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "initial": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "initial"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_TIMER"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "SetVentCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "open": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "open"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_SET_VENT"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "Stage": {
+   "anyOf": [
+    {
+     "$ref": "#/definitions/StageV2"
+    },
+    {
+     "$ref": "#/definitions/CookingStage"
+    },
+    {
+     "$ref": "#/definitions/StopStage"
+    }
+   ]
+  },
+  "StageConditions": {
+   "anyOf": [
+    {
+     "additionalProperties": {
+      "$ref": "#/definitions/Conditions"
+     },
+     "defaultProperties": [],
+     "type": "object"
+    },
+    {
+     "$ref": "#/definitions/{and?:StageConditions;or?:StageConditions;}"
+    }
+   ]
+  },
+  "StageDo": {
+   "defaultProperties": [],
+   "properties": {
+    "exhaustVent": {
+     "$ref": "#/definitions/StageExhaustVent"
+    },
+    "fan": {
+     "$ref": "#/definitions/StageFan_1"
+    },
+    "heatingElements": {
+     "$ref": "#/definitions/StageHeatingElements_1"
+    },
+    "steamGenerators": {
+     "$ref": "#/definitions/StageSteamGenerators_1"
+    },
+    "temperatureBulbs": {
+     "$ref": "#/definitions/StageTemperatureBulbs_1"
+    },
+    "temperatureProbe": {
+     "$ref": "#/definitions/StageTemperatureProbe_1"
+    },
+    "timer": {
+     "$ref": "#/definitions/StageTimer_1"
+    },
+    "type": {
+     "$ref": "#/definitions/StageType_1"
+    }
+   },
+   "required": [
+    "fan",
+    "heatingElements",
+    "temperatureBulbs",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StageDryTemperatureBulb": {
+   "defaultProperties": [],
+   "properties": {
+    "dry": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        },
+        "fahrenheit": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius",
+        "fahrenheit"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    },
+    "mode": {
+     "enum": [
+      "dry"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "dry",
+    "mode"
+   ],
+   "type": "object"
+  },
+  "StageDryTemperatureBulb_1": {
+   "defaultProperties": [],
+   "properties": {
+    "dry": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    },
+    "mode": {
+     "enum": [
+      "dry"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "dry",
+    "mode"
+   ],
+   "type": "object"
+  },
+  "StageEntry": {
+   "defaultProperties": [],
+   "properties": {
+    "conditions": {
+     "$ref": "#/definitions/StageConditions"
+    }
+   },
+   "required": [
+    "conditions"
+   ],
+   "type": "object"
+  },
+  "StageExhaustVent": {
+   "defaultProperties": [],
+   "properties": {
+    "state": {
+     "enum": [
+      "closed",
+      "open-max",
+      "open-mid"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "state"
+   ],
+   "type": "object"
+  },
+  "StageExit": {
+   "defaultProperties": [],
+   "properties": {
+    "conditions": {
+     "$ref": "#/definitions/StageConditions"
+    }
+   },
+   "type": "object"
+  },
+  "StageFan": {
+   "defaultProperties": [],
+   "properties": {
+    "speed": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "speed"
+   ],
+   "type": "object"
+  },
+  "StageFan_1": {
+   "defaultProperties": [],
+   "properties": {
+    "speed": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "speed"
+   ],
+   "type": "object"
+  },
+  "StageHeatingElements": {
+   "defaultProperties": [],
+   "properties": {
+    "bottom": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    },
+    "rear": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    },
+    "top": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "bottom",
+    "rear",
+    "top"
+   ],
+   "type": "object"
+  },
+  "StageHeatingElements_1": {
+   "defaultProperties": [],
+   "properties": {
+    "bottom": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    },
+    "rear": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    },
+    "top": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "bottom",
+    "rear",
+    "top"
+   ],
+   "type": "object"
+  },
+  "StageRackPosition": {
+   "enum": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "type": "number"
+  },
+  "StageRelativeHumiditySteamGenerator": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "relative-humidity"
+     ],
+     "type": "string"
+    },
+    "relativeHumidity": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "relativeHumidity"
+   ],
+   "type": "object"
+  },
+  "StageRelativeHumiditySteamGenerator_1": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "relative-humidity"
+     ],
+     "type": "string"
+    },
+    "relativeHumidity": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "relativeHumidity"
+   ],
+   "type": "object"
+  },
+  "StageSteamGenerators": {
+   "else": {
+    "else": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "relative-humidity",
+        "steam-percentage"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "if": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "steam-percentage"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "then": {
+     "$ref": "#/definitions/StageSteamPercentageSteamGenerator"
+    }
+   },
+   "if": {
+    "properties": {
+     "mode": {
+      "enum": [
+       "relative-humidity"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "mode"
+    ]
+   },
+   "then": {
+    "$ref": "#/definitions/StageRelativeHumiditySteamGenerator"
+   }
+  },
+  "StageSteamGenerators_1": {
+   "else": {
+    "else": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "relative-humidity",
+        "steam-percentage"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "if": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "steam-percentage"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "then": {
+     "$ref": "#/definitions/StageSteamPercentageSteamGenerator_1"
+    }
+   },
+   "if": {
+    "properties": {
+     "mode": {
+      "enum": [
+       "relative-humidity"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "mode"
+    ]
+   },
+   "then": {
+    "$ref": "#/definitions/StageRelativeHumiditySteamGenerator_1"
+   }
+  },
+  "StageSteamPercentageSteamGenerator": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "steam-percentage"
+     ],
+     "type": "string"
+    },
+    "steamPercentage": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "steamPercentage"
+   ],
+   "type": "object"
+  },
+  "StageSteamPercentageSteamGenerator_1": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "steam-percentage"
+     ],
+     "type": "string"
+    },
+    "steamPercentage": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "steamPercentage"
+   ],
+   "type": "object"
+  },
+  "StageTemperatureBulbs": {
+   "else": {
+    "else": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "dry",
+        "wet"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "if": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "wet"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "then": {
+     "$ref": "#/definitions/StageWetTemperatureBulb"
+    }
+   },
+   "if": {
+    "properties": {
+     "mode": {
+      "enum": [
+       "dry"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "mode"
+    ]
+   },
+   "then": {
+    "$ref": "#/definitions/StageDryTemperatureBulb"
+   }
+  },
+  "StageTemperatureBulbs_1": {
+   "else": {
+    "else": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "dry",
+        "wet"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "if": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "wet"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "then": {
+     "$ref": "#/definitions/StageWetTemperatureBulb_1"
+    }
+   },
+   "if": {
+    "properties": {
+     "mode": {
+      "enum": [
+       "dry"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "mode"
+    ]
+   },
+   "then": {
+    "$ref": "#/definitions/StageDryTemperatureBulb_1"
+   }
+  },
+  "StageTemperatureProbe": {
+   "defaultProperties": [],
+   "properties": {
+    "setpoint": {
+     "defaultProperties": [],
+     "properties": {
+      "celsius": {
+       "type": "number"
+      },
+      "fahrenheit": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "celsius",
+      "fahrenheit"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "setpoint"
+   ],
+   "type": "object"
+  },
+  "StageTemperatureProbe_1": {
+   "defaultProperties": [],
+   "properties": {
+    "setpoint": {
+     "defaultProperties": [],
+     "properties": {
+      "celsius": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "celsius"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "setpoint"
+   ],
+   "type": "object"
+  },
+  "StageTimer": {
+   "defaultProperties": [],
+   "properties": {
+    "initial": {
+     "type": "number"
+    },
+    "startType": {
+     "enum": [
+      "manual",
+      "when-preheated"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "initial"
+   ],
+   "type": "object"
+  },
+  "StageTimer_1": {
+   "defaultProperties": [],
+   "properties": {
+    "entry": {
+     "anyOf": [
+      {
+       "properties": {},
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/StageEntry"
+      }
+     ]
+    },
+    "initial": {
+     "type": "number"
+    },
+    "startType": {
+     "enum": [
+      "manual",
+      "on-detection",
+      "when-preheated"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "initial"
+   ],
+   "type": "object"
+  },
+  "StageType": {
+   "enum": [
+    "cook",
+    "preheat",
+    "stop"
+   ],
+   "type": "string"
+  },
+  "StageType_1": {
+   "enum": [
+    "cook",
+    "stop"
+   ],
+   "type": "string"
+  },
+  "StageV2": {
+   "defaultProperties": [],
+   "properties": {
+    "description": {
+     "type": "string"
+    },
+    "do": {
+     "$ref": "#/definitions/StageDo"
+    },
+    "entry": {
+     "$ref": "#/definitions/StageEntry"
+    },
+    "exit": {
+     "$ref": "#/definitions/StageExit"
+    },
+    "id": {
+     "type": "string"
+    },
+    "photoUrl": {
+     "type": "string"
+    },
+    "preset": {
+     "type": "string"
+    },
+    "rackPosition": {
+     "type": "number"
+    },
+    "title": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "do",
+    "exit",
+    "id"
+   ],
+   "type": "object"
+  },
+  "StageVent": {
+   "defaultProperties": [],
+   "properties": {
+    "open": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "open"
+   ],
+   "type": "object"
+  },
+  "StageWetTemperatureBulb": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "wet"
+     ],
+     "type": "string"
+    },
+    "wet": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        },
+        "fahrenheit": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius",
+        "fahrenheit"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "wet"
+   ],
+   "type": "object"
+  },
+  "StageWetTemperatureBulb_1": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "wet"
+     ],
+     "type": "string"
+    },
+    "wet": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "wet"
+   ],
+   "type": "object"
+  },
+  "StartCookCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "anyOf": [
+      {
+       "$ref": "#/definitions/StartCookCommandPayloadV1"
+      },
+      {
+       "$ref": "#/definitions/StartCookCommandPayloadV2"
+      }
+     ]
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_START"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StartCookCommandPayloadV1": {
+   "defaultProperties": [],
+   "properties": {
+    "cookId": {
+     "type": "string"
+    },
+    "stages": {
+     "items": {
+      "anyOf": [
+       {
+        "$ref": "#/definitions/CookingStage"
+       },
+       {
+        "$ref": "#/definitions/StopStage"
+       }
+      ]
+     },
+     "type": "array"
+    }
+   },
+   "required": [
+    "stages"
+   ],
+   "type": "object"
+  },
+  "StartCookCommandPayloadV2": {
+   "defaultProperties": [],
+   "properties": {
+    "cookId": {
+     "type": "string"
+    },
+    "cookableId": {
+     "type": "string"
+    },
+    "cookableType": {
+     "enum": [
+      "guide",
+      "manual",
+      "recipe"
+     ],
+     "type": "string"
+    },
+    "cookerId": {
+     "type": "string"
+    },
+    "coverPhotoUrl": {
+     "type": "string"
+    },
+    "coverVideoUrl": {
+     "type": "string"
+    },
+    "description": {
+     "type": "string"
+    },
+    "originSource": {
+     "enum": [
+      "android",
+      "api",
+      "hardware",
+      "ios"
+     ],
+     "type": "string"
+    },
+    "stages": {
+     "items": {
+      "$ref": "#/definitions/StageV2"
+     },
+     "type": "array"
+    },
+    "title": {
+     "type": "string"
+    },
+    "type": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "cookableType",
+    "cookerId",
+    "originSource",
+    "stages",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StartDescaleCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_START_DESCALE"
+    }
+   },
+   "required": [
+    "id",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StartFirmwareUpdateCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "downloadLink": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "downloadLink"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_OTA"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StartLiveStreamCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "$ref": "#/definitions/CloudflareSrtPayload"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_START_LIVE_STREAM"
+    }
+   },
+   "required": [
+    "id",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StartStageCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "stageId": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "stageId"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_START_STAGE"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StopCookCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_STOP"
+    }
+   },
+   "required": [
+    "id",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StopLiveStreamCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_STOP_LIVE_STREAM"
+    }
+   },
+   "required": [
+    "id",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StopStage": {
+   "defaultProperties": [],
+   "properties": {
+    "description": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    },
+    "timer": {
+     "$ref": "#/definitions/StageTimer"
+    },
+    "title": {
+     "type": [
+      "string",
+      "number"
+     ]
+    },
+    "type": {
+     "$ref": "#/definitions/StageType"
+    },
+    "userActionRequired": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "id",
+    "type",
+    "userActionRequired"
+   ],
+   "type": "object"
+  },
+  "TemperatureUnit": {
+   "enum": [
+    "C",
+    "F"
+   ],
+   "type": "string"
+  },
+  "UpdateCookStageCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "$ref": "#/definitions/Stage"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_UPDATE_COOK_STAGE"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "UpdateCookStagesCommand": {
+   "defaultProperties": [],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "payload": {
+     "defaultProperties": [],
+     "properties": {
+      "stages": {
+       "items": {
+        "anyOf": [
+         {
+          "$ref": "#/definitions/StageV2"
+         },
+         {
+          "$ref": "#/definitions/CookingStage"
+         },
+         {
+          "$ref": "#/definitions/StopStage"
+         }
+        ]
+       },
+       "type": "array"
+      }
+     },
+     "required": [
+      "stages"
+     ],
+     "type": "object"
+    },
+    "type": {
+     "$ref": "#/definitions/APOCommandType.CMD_APO_UPDATE_COOK_STAGES"
+    }
+   },
+   "required": [
+    "id",
+    "payload",
+    "type"
+   ],
+   "type": "object"
+  },
+  "__type": {
+   "defaultProperties": [],
+   "type": "object"
+  },
+  "{and?:StageConditions;or?:StageConditions;}": {
+   "defaultProperties": [],
+   "properties": {
+    "and": {
+     "anyOf": [
+      {
+       "additionalProperties": {
+        "$ref": "#/definitions/Conditions"
+       },
+       "defaultProperties": [],
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/{and?:StageConditions;or?:StageConditions;}"
+      }
+     ]
+    },
+    "or": {
+     "anyOf": [
+      {
+       "additionalProperties": {
+        "$ref": "#/definitions/Conditions"
+       },
+       "defaultProperties": [],
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/{and?:StageConditions;or?:StageConditions;}"
+      }
+     ]
+    }
+   },
+   "type": "object"
+  }
+ },
+ "properties": {
+  "command": {
+   "$ref": "#/definitions/APOCommandType"
+  },
+  "payload": {
+   "$ref": "#/definitions/OvenCommand"
+  },
+  "requestId": {
+   "type": "string"
+  }
+ },
+ "required": [
+  "command",
+  "payload",
+  "requestId"
+ ],
+ "type": "object"
+}

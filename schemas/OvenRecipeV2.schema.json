@@ -1,0 +1,982 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "defaultProperties": [],
+ "definitions": {
+  "AI": {
+   "defaultProperties": [],
+   "properties": {
+    "generationDate": {
+     "$ref": "#/definitions/FirebaseFirestoreTypes.Timestamp"
+    },
+    "imageUrl": {
+     "type": "string"
+    },
+    "recipeUrl": {
+     "type": "string"
+    },
+    "summary": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "generationDate",
+    "summary"
+   ],
+   "type": "object"
+  },
+  "Conditions": {
+   "defaultProperties": [],
+   "properties": {
+    "<": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "<=": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "=": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    ">": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    ">=": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "equals": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    },
+    "exists": {
+     "type": [
+      "string",
+      "number",
+      "boolean"
+     ]
+    }
+   },
+   "type": "object"
+  },
+  "Direction": {
+   "defaultProperties": [],
+   "properties": {
+    "description": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    },
+    "photoUrl": {
+     "type": "string"
+    },
+    "title": {
+     "type": "string"
+    },
+    "videoThumbnailUrl": {
+     "type": "string"
+    },
+    "videoUrl": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "description",
+    "id",
+    "title"
+   ],
+   "type": "object"
+  },
+  "FirebaseFirestoreTypes.CollectionReference": {
+   "defaultProperties": [],
+   "description": "A `CollectionReference` object can be used for adding documents, getting document references, and querying for\ndocuments (using the methods inherited from `Query`).",
+   "properties": {
+    "id": {
+     "description": "The collection's identifier.",
+     "type": "string"
+    },
+    "parent": {
+     "$ref": "#/definitions/FirebaseFirestoreTypes.DocumentReference",
+     "description": "A reference to the containing `DocumentReference` if this is a subcollection. If this isn't a\nsubcollection, the reference is None."
+    },
+    "path": {
+     "description": "A string representing the path of the referenced collection (relative to the root of the database).",
+     "type": "string"
+    }
+   },
+   "required": [
+    "id",
+    "parent",
+    "path"
+   ],
+   "type": "object"
+  },
+  "FirebaseFirestoreTypes.DocumentReference": {
+   "defaultProperties": [],
+   "description": "A `DocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen\nto the location. The document at the referenced location may or may not exist. A `DocumentReference` can also be used\nto create a `CollectionReference` to a subcollection.",
+   "properties": {
+    "firestore": {
+     "$ref": "#/definitions/FirebaseFirestoreTypes.Module",
+     "description": "The Firestore instance the document is in. This is useful for performing transactions, for example."
+    },
+    "id": {
+     "description": "The document's identifier within its collection.",
+     "type": "string"
+    },
+    "parent": {
+     "$ref": "#/definitions/FirebaseFirestoreTypes.CollectionReference",
+     "description": "The Collection this `DocumentReference` belongs to."
+    },
+    "path": {
+     "description": "A string representing the path of the referenced document (relative to the root of the database).",
+     "type": "string"
+    }
+   },
+   "required": [
+    "firestore",
+    "id",
+    "parent",
+    "path"
+   ],
+   "type": "object"
+  },
+  "FirebaseFirestoreTypes.Module": {
+   "defaultProperties": [],
+   "description": "The Firebase Cloud Firestore service is available for the default app or a given app.\n\n#### Example: Get the firestore instance for the **default app**:\n\n```js\nconst firestoreForDefaultApp = firebase.firestore();\n```\n\n#### Example: Get the firestore instance for a **secondary app**:\n\n```js\nconst otherApp = firebase.app('otherApp');\nconst firestoreForOtherApp = firebase.firestore(otherApp);\n```",
+   "properties": {
+    "app": {
+     "$ref": "#/definitions/ReactNativeFirebase.FirebaseApp",
+     "description": "The current `FirebaseApp` instance for this Firebase service."
+    },
+    "emitter": {
+     "description": "Returns the shared event emitter instance used for all JS event routing."
+    },
+    "native": {
+     "description": "The native module instance for this Firebase service."
+    }
+   },
+   "required": [
+    "app",
+    "emitter",
+    "native"
+   ],
+   "type": "object"
+  },
+  "FirebaseFirestoreTypes.Timestamp": {
+   "defaultProperties": [],
+   "description": "A Timestamp represents a point in time independent of any time zone or calendar, represented as seconds and\nfractions of seconds at nanosecond resolution in UTC Epoch time.\n\nIt is encoded using the Proleptic Gregorian Calendar which extends the Gregorian calendar backwards to year one.\nIt is encoded assuming all minutes are 60 seconds long, i.e. leap seconds are \"smeared\" so that no leap second table\nis needed for interpretation. Range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z.",
+   "properties": {
+    "nanoseconds": {
+     "description": "The number of nanoseconds of this `Timestamp`;",
+     "type": "number"
+    },
+    "seconds": {
+     "description": "The number of seconds of this `Timestamp`.",
+     "type": "number"
+    }
+   },
+   "required": [
+    "nanoseconds",
+    "seconds"
+   ],
+   "type": "object"
+  },
+  "Ingredient": {
+   "defaultProperties": [],
+   "properties": {
+    "description": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    },
+    "quantity": {
+     "type": "number"
+    },
+    "quantityDisplayType": {
+     "enum": [
+      "decimal",
+      "fraction"
+     ],
+     "type": "string"
+    },
+    "unit": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "description",
+    "id",
+    "quantity",
+    "quantityDisplayType",
+    "unit"
+   ],
+   "type": "object"
+  },
+  "ReactNativeFirebase.FirebaseApp": {
+   "defaultProperties": [],
+   "properties": {
+    "name": {
+     "description": "The name (identifier) for this App. '[DEFAULT]' is the default App.",
+     "type": "string"
+    },
+    "options": {
+     "$ref": "#/definitions/ReactNativeFirebase.FirebaseAppOptions",
+     "description": "The (read-only) configuration options from the app initialization."
+    }
+   },
+   "required": [
+    "name",
+    "options"
+   ],
+   "type": "object"
+  },
+  "ReactNativeFirebase.FirebaseAppOptions": {
+   "additionalProperties": {},
+   "defaultProperties": [],
+   "properties": {
+    "androidClientId": {
+     "description": "iOS only - The Android client ID used in Google AppInvite when an iOS app has its Android version, for\nexample \"12345.apps.googleusercontent.com\".",
+     "type": "string"
+    },
+    "apiKey": {
+     "description": "An API key used for authenticating requests from your app, e.g.\n\"AIzaSyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk\", used to identify your app to Google servers.",
+     "type": "string"
+    },
+    "appId": {
+     "description": "The Google App ID that is used to uniquely identify an instance of an app.",
+     "type": "string"
+    },
+    "clientId": {
+     "description": "iOS only - The OAuth2 client ID for iOS application used to authenticate Google users, for example\n\"12345.apps.googleusercontent.com\", used for signing in with Google.",
+     "type": "string"
+    },
+    "databaseURL": {
+     "description": "The database root URL, e.g. \"http://abc-xyz-123.firebaseio.com\".",
+     "type": "string"
+    },
+    "deepLinkURLScheme": {
+     "description": "iOS only - The URL scheme used to set up Durable Deep Link service.",
+     "type": "string"
+    },
+    "gaTrackingId": {
+     "description": "The tracking ID for Google Analytics, e.g. \"UA-12345678-1\", used to configure Google Analytics.",
+     "type": "string"
+    },
+    "messagingSenderId": {
+     "description": "The Project Number from the Google Developer's console, for example \"012345678901\", used to\nconfigure Google Cloud Messaging.",
+     "type": "string"
+    },
+    "projectId": {
+     "description": "The Project ID from the Firebase console, for example \"abc-xyz-123\".",
+     "type": "string"
+    },
+    "storageBucket": {
+     "description": "The Google Cloud Storage bucket name, e.g. \"abc-xyz-123.storage.firebase.com\".",
+     "type": "string"
+    }
+   },
+   "required": [
+    "appId",
+    "projectId"
+   ],
+   "type": "object"
+  },
+  "StageConditions": {
+   "anyOf": [
+    {
+     "additionalProperties": {
+      "$ref": "#/definitions/Conditions"
+     },
+     "defaultProperties": [],
+     "type": "object"
+    },
+    {
+     "$ref": "#/definitions/{and?:StageConditions;or?:StageConditions;}"
+    }
+   ]
+  },
+  "StageDo": {
+   "defaultProperties": [],
+   "properties": {
+    "exhaustVent": {
+     "$ref": "#/definitions/StageExhaustVent"
+    },
+    "fan": {
+     "$ref": "#/definitions/StageFan"
+    },
+    "heatingElements": {
+     "$ref": "#/definitions/StageHeatingElements"
+    },
+    "steamGenerators": {
+     "$ref": "#/definitions/StageSteamGenerators"
+    },
+    "temperatureBulbs": {
+     "$ref": "#/definitions/StageTemperatureBulbs"
+    },
+    "temperatureProbe": {
+     "$ref": "#/definitions/StageTemperatureProbe"
+    },
+    "timer": {
+     "$ref": "#/definitions/StageTimer"
+    },
+    "type": {
+     "$ref": "#/definitions/StageType"
+    }
+   },
+   "required": [
+    "fan",
+    "heatingElements",
+    "temperatureBulbs",
+    "type"
+   ],
+   "type": "object"
+  },
+  "StageDryTemperatureBulb": {
+   "defaultProperties": [],
+   "properties": {
+    "dry": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    },
+    "mode": {
+     "enum": [
+      "dry"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "dry",
+    "mode"
+   ],
+   "type": "object"
+  },
+  "StageEntry": {
+   "defaultProperties": [],
+   "properties": {
+    "conditions": {
+     "$ref": "#/definitions/StageConditions"
+    }
+   },
+   "required": [
+    "conditions"
+   ],
+   "type": "object"
+  },
+  "StageExhaustVent": {
+   "defaultProperties": [],
+   "properties": {
+    "state": {
+     "enum": [
+      "closed",
+      "open-max",
+      "open-mid"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "state"
+   ],
+   "type": "object"
+  },
+  "StageExit": {
+   "defaultProperties": [],
+   "properties": {
+    "conditions": {
+     "$ref": "#/definitions/StageConditions"
+    }
+   },
+   "type": "object"
+  },
+  "StageFan": {
+   "defaultProperties": [],
+   "properties": {
+    "speed": {
+     "type": "number"
+    }
+   },
+   "required": [
+    "speed"
+   ],
+   "type": "object"
+  },
+  "StageHeatingElements": {
+   "defaultProperties": [],
+   "properties": {
+    "bottom": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    },
+    "rear": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    },
+    "top": {
+     "defaultProperties": [],
+     "properties": {
+      "on": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "on"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "bottom",
+    "rear",
+    "top"
+   ],
+   "type": "object"
+  },
+  "StageRelativeHumiditySteamGenerator": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "relative-humidity"
+     ],
+     "type": "string"
+    },
+    "relativeHumidity": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "relativeHumidity"
+   ],
+   "type": "object"
+  },
+  "StageSteamGenerators": {
+   "else": {
+    "else": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "relative-humidity",
+        "steam-percentage"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "if": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "steam-percentage"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "then": {
+     "$ref": "#/definitions/StageSteamPercentageSteamGenerator"
+    }
+   },
+   "if": {
+    "properties": {
+     "mode": {
+      "enum": [
+       "relative-humidity"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "mode"
+    ]
+   },
+   "then": {
+    "$ref": "#/definitions/StageRelativeHumiditySteamGenerator"
+   }
+  },
+  "StageSteamPercentageSteamGenerator": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "steam-percentage"
+     ],
+     "type": "string"
+    },
+    "steamPercentage": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "steamPercentage"
+   ],
+   "type": "object"
+  },
+  "StageTemperatureBulbs": {
+   "else": {
+    "else": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "dry",
+        "wet"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "if": {
+     "properties": {
+      "mode": {
+       "enum": [
+        "wet"
+       ],
+       "type": "string"
+      }
+     },
+     "required": [
+      "mode"
+     ]
+    },
+    "then": {
+     "$ref": "#/definitions/StageWetTemperatureBulb"
+    }
+   },
+   "if": {
+    "properties": {
+     "mode": {
+      "enum": [
+       "dry"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "mode"
+    ]
+   },
+   "then": {
+    "$ref": "#/definitions/StageDryTemperatureBulb"
+   }
+  },
+  "StageTemperatureProbe": {
+   "defaultProperties": [],
+   "properties": {
+    "setpoint": {
+     "defaultProperties": [],
+     "properties": {
+      "celsius": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "celsius"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "setpoint"
+   ],
+   "type": "object"
+  },
+  "StageTimer": {
+   "defaultProperties": [],
+   "properties": {
+    "entry": {
+     "anyOf": [
+      {
+       "properties": {},
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/StageEntry"
+      }
+     ]
+    },
+    "initial": {
+     "type": "number"
+    },
+    "startType": {
+     "enum": [
+      "manual",
+      "on-detection",
+      "when-preheated"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "initial"
+   ],
+   "type": "object"
+  },
+  "StageType": {
+   "enum": [
+    "cook",
+    "stop"
+   ],
+   "type": "string"
+  },
+  "StageV2": {
+   "defaultProperties": [],
+   "properties": {
+    "description": {
+     "type": "string"
+    },
+    "do": {
+     "$ref": "#/definitions/StageDo"
+    },
+    "entry": {
+     "$ref": "#/definitions/StageEntry"
+    },
+    "exit": {
+     "$ref": "#/definitions/StageExit"
+    },
+    "id": {
+     "type": "string"
+    },
+    "photoUrl": {
+     "type": "string"
+    },
+    "preset": {
+     "type": "string"
+    },
+    "rackPosition": {
+     "type": "number"
+    },
+    "title": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "do",
+    "exit",
+    "id"
+   ],
+   "type": "object"
+  },
+  "StageWetTemperatureBulb": {
+   "defaultProperties": [],
+   "properties": {
+    "mode": {
+     "enum": [
+      "wet"
+     ],
+     "type": "string"
+    },
+    "wet": {
+     "defaultProperties": [],
+     "properties": {
+      "setpoint": {
+       "defaultProperties": [],
+       "properties": {
+        "celsius": {
+         "type": "number"
+        }
+       },
+       "required": [
+        "celsius"
+       ],
+       "type": "object"
+      }
+     },
+     "required": [
+      "setpoint"
+     ],
+     "type": "object"
+    }
+   },
+   "required": [
+    "mode",
+    "wet"
+   ],
+   "type": "object"
+  },
+  "{and?:StageConditions;or?:StageConditions;}": {
+   "defaultProperties": [],
+   "properties": {
+    "and": {
+     "anyOf": [
+      {
+       "additionalProperties": {
+        "$ref": "#/definitions/Conditions"
+       },
+       "defaultProperties": [],
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/{and?:StageConditions;or?:StageConditions;}"
+      }
+     ]
+    },
+    "or": {
+     "anyOf": [
+      {
+       "additionalProperties": {
+        "$ref": "#/definitions/Conditions"
+       },
+       "defaultProperties": [],
+       "type": "object"
+      },
+      {
+       "$ref": "#/definitions/{and?:StageConditions;or?:StageConditions;}"
+      }
+     ]
+    }
+   },
+   "type": "object"
+  }
+ },
+ "properties": {
+  "ai": {
+   "$ref": "#/definitions/AI"
+  },
+  "averageRating": {
+   "type": "number"
+  },
+  "cookTimeSeconds": {
+   "type": "number"
+  },
+  "coverPhotoUrl": {
+   "type": "string"
+  },
+  "coverVideoHasAudio": {
+   "type": "boolean"
+  },
+  "coverVideoThumbnailUrl": {
+   "type": "string"
+  },
+  "coverVideoUrl": {
+   "type": "string"
+  },
+  "createdTimestamp": {
+   "$ref": "#/definitions/FirebaseFirestoreTypes.Timestamp"
+  },
+  "description": {
+   "type": "string"
+  },
+  "draft": {
+   "type": "boolean"
+  },
+  "iconType": {
+   "enum": [
+    "airFry",
+    "convectionBake",
+    "heatingElementBottom",
+    "heatingElementRear",
+    "heatingElementTop",
+    "heatingElementTopRear",
+    "heatingElementTopRearBottom",
+    "proof",
+    "steamIcon",
+    "threeHorizontalWavyLines"
+   ],
+   "type": "string"
+  },
+  "id": {
+   "type": "string"
+  },
+  "ingredients": {
+   "items": {
+    "$ref": "#/definitions/Ingredient"
+   },
+   "type": "array"
+  },
+  "isQuickStart": {
+   "type": "boolean"
+  },
+  "numberOfComments": {
+   "type": "number"
+  },
+  "numberOfCooks": {
+   "type": "number"
+  },
+  "numberOfRatings": {
+   "type": "number"
+  },
+  "preparationTimeSeconds": {
+   "type": "number"
+  },
+  "published": {
+   "type": "boolean"
+  },
+  "publishedTimestamp": {
+   "$ref": "#/definitions/FirebaseFirestoreTypes.Timestamp"
+  },
+  "servings": {
+   "type": "number"
+  },
+  "steps": {
+   "items": {
+    "anyOf": [
+     {
+      "allOf": [
+       {
+        "defaultProperties": [],
+        "properties": {
+         "stepType": {
+          "enum": [
+           "direction"
+          ],
+          "type": "string"
+         }
+        },
+        "required": [
+         "stepType"
+        ],
+        "type": "object"
+       },
+       {
+        "$ref": "#/definitions/Direction"
+       }
+      ]
+     },
+     {
+      "allOf": [
+       {
+        "defaultProperties": [],
+        "properties": {
+         "stepType": {
+          "enum": [
+           "stage"
+          ],
+          "type": "string"
+         }
+        },
+        "required": [
+         "stepType"
+        ],
+        "type": "object"
+       },
+       {
+        "$ref": "#/definitions/StageV2"
+       }
+      ]
+     }
+    ]
+   },
+   "type": "array"
+  },
+  "title": {
+   "type": "string"
+  },
+  "updatedTimestamp": {
+   "$ref": "#/definitions/FirebaseFirestoreTypes.Timestamp"
+  },
+  "userProfileRef": {
+   "$ref": "#/definitions/FirebaseFirestoreTypes.DocumentReference"
+  },
+  "utility": {
+   "type": "boolean"
+  }
+ },
+ "required": [
+  "averageRating",
+  "cookTimeSeconds",
+  "coverPhotoUrl",
+  "coverVideoHasAudio",
+  "coverVideoThumbnailUrl",
+  "coverVideoUrl",
+  "createdTimestamp",
+  "description",
+  "draft",
+  "id",
+  "ingredients",
+  "numberOfComments",
+  "numberOfRatings",
+  "preparationTimeSeconds",
+  "published",
+  "publishedTimestamp",
+  "servings",
+  "steps",
+  "title",
+  "updatedTimestamp",
+  "userProfileRef"
+ ],
+ "type": "object"
+}

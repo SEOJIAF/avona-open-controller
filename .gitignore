@@ -1,0 +1,17 @@
+# The Anova app (APK) and anything extracted or decompiled from it are Anova's copyrighted code.
+# They are inputs for analysis only; never commit them.
+*.apk
+*.dex
+*.hbc
+*.bundle
+index.android.bundle
+assets/
+decompiled/
+jadx-out/
+
+# Local secrets and runtime files
+webapp/certs/
+.env
+*.log
+node_modules/
+.DS_Store
