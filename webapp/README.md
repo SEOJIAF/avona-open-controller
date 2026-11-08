@@ -73,7 +73,12 @@ Don't touch the system's network menu while setup runs.
 ### 3. Cook (`/`)
 
 Each cooker card shows live water temperature, target and timer, with Start (target + optional timer), Stop,
-Update temp, Update timer and °C/°F. Low water and offline states show next to the model.
+Apply changes (while cooking) and °C/°F. Low water, alerts and cookers that are off or offline show on the card.
+
+The server connects to Anova's cloud only while you use it: when a dashboard is open or a command or
+`/api/status` request comes in. It disconnects after `CLOUD_IDLE_MINUTES` (default 5) with neither. A dashboard
+stops listening 30 seconds after its tab is hidden, and after 10 minutes without a tap or key press while nothing
+is cooking; any tap reconnects. Waking up takes a second or two, so the first command after a pause is slower.
 
 ## Configuration
 
@@ -84,6 +89,7 @@ Update temp, Update timer and °C/°F. Low water and offline states show next to
 | `TLS_CERT`, `TLS_KEY` | – | Serve HTTPS with this certificate and key |
 | `COOKIE_SECURE` | – | `1` marks the session cookie `Secure` when HTTPS is terminated by a proxy (automatic with `TLS_*`) |
 | `ANOVA_FIREBASE_API_KEY` | key from the app | Override the Firebase web API key |
+| `CLOUD_IDLE_MINUTES` | `5` | Minutes without requests or an open dashboard before the server disconnects from Anova's cloud |
 | `ANOVA_WS_LOG` | – | File path; appends every raw cloud message, in both directions, for debugging. Tokens are not logged. |
 | `MOCK` | – | `1` = offline simulation |
 
@@ -136,8 +142,8 @@ All routes except `/login`, `/api/login`, `/api/signup` and `/api/config` need t
 |---|---|
 | `POST /api/login`, `POST /api/signup` `{email, password}` | Start a session |
 | `POST /api/logout`, `GET /api/me` | End the session; current user `{email, uid}` |
-| `GET /api/status` | Cloud connection and cookers with their last state |
-| `GET /api/events` | Server‑Sent Events: `status`, `devices`, `state` |
+| `GET /api/status` | Cloud connection and cookers with their last state. Connects first if idle (`error` says why it couldn't) |
+| `GET /api/events` | Server‑Sent Events: `status`, `devices`, `state`. Keeps the cloud connection open while listening |
 | `POST /api/devices/{id}/start` `{targetTemperature, unit, timerMinutes}` | Start cooking |
 | `POST /api/devices/{id}/stop` | Stop |
 | `POST /api/devices/{id}/temperature` `{targetTemperature, unit}` | Change target |
@@ -154,6 +160,7 @@ All routes except `/login`, `/api/login`, `/api/signup` and `/api/config` need t
 | `gen2-setup.mjs` | 2nd‑gen Wi‑Fi setup: cooker hotspot HTTP API and NetworkManager control |
 | `public/gen3-ble.js` | 3rd‑gen Bluetooth setup protocol (Web Bluetooth) |
 | `public/*.html` | Login, dashboard, setup pages |
+| `public/app.css`, `public/icon.svg` | Shared styles (light/dark, animated water) and app icon |
 | `mock-cloud.mjs`, `public/mock-bluetooth.js` | Offline simulation for `MOCK=1` |
 | `tests/` | `npm test` |
 | `tools/make-local-https.sh` | Local CA and certificate for LAN HTTPS |
@@ -163,6 +170,6 @@ All routes except `/login`, `/api/login`, `/api/signup` and `/api/config` need t
 - **The cooker's hotspot isn't found:** check the code on its display. A new code appears each time you hold the button. Keep the laptop close.
 - **"Lost contact with the cooker":** the computer left the cooker's Wi‑Fi. Usually the system network menu or a saved network took over. Start again from the code.
 - **"The cooker could not join that Wi‑Fi network":** wrong password, or a network that is 5 GHz-only. Guest networks often block devices from reaching the internet.
-- **The cooker is on the dashboard but shows "no status from the cloud yet":** it hasn't checked in. Check the Wi‑Fi symbol on its display.
+- **The cooker shows "Off or offline":** it sent nothing in the first 10 seconds after connecting. That is normal when it is unplugged; otherwise check the Wi‑Fi symbol on its display.
 - **Commands time out:** the cooker is offline, or the cloud didn't answer within 10 s. Run with `ANOVA_WS_LOG=/tmp/ws.log` to see the raw messages.
 - **Bluetooth "not supported":** use Chrome or Edge on `localhost`/HTTPS. Firefox-based browsers and Safari have no Web Bluetooth.

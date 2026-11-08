@@ -2,60 +2,74 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f0ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0c10" media="(prefers-color-scheme: dark)">
 <title>Sign in · Open Avona</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/app.css">
 <style>
-  :root {
-    --bg: #f6f4f0; --card: #ffffff; --text: #1d1d1b; --muted: #6b6860; --line: #e2ded6;
-    --accent: #d2491f; --accent-text: #ffffff; --bad: #b3261e; --note: #fbefe2;
+  body { --glow: rgb(236 90 122 / .18); overflow-x: hidden; }
+  .scene { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+  .scene .sea { --sea-h: 44%; -webkit-mask-image: linear-gradient(180deg, #000 20%, transparent 96%); mask-image: linear-gradient(180deg, #000 20%, transparent 96%); }
+  .sun {
+    position: absolute; left: 50%; bottom: calc(44% - 120px); width: min(90vw, 560px); aspect-ratio: 1; transform: translateX(-50%);
+    border-radius: 50%; background: radial-gradient(circle, rgb(247 136 62 / .5), rgb(236 90 122 / .22) 42%, transparent 68%);
+    filter: blur(10px); animation: glow 6s ease-in-out infinite alternate;
   }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #161513; --card: #22201d; --text: #f2efe9; --muted: #a29d93; --line: #36332e;
-            --accent: #ff7a4d; --accent-text: #1a0d07; --bad: #ff8a80; --note: #2d241c; }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-         font: 16px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 400px; margin: 0 auto; padding: 48px 16px; }
-  h1 { font-size: 1.4rem; margin: 0 0 4px; }
-  .sub { color: var(--muted); margin: 0 0 24px; font-size: .95rem; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
-  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--bg); padding: 4px;
-          border-radius: 10px; margin-bottom: 18px; }
-  .tabs button { border: 0; background: transparent; padding: 8px; border-radius: 7px; font: inherit;
-                 color: var(--muted); cursor: pointer; }
-  .tabs button[aria-selected=true] { background: var(--card); color: var(--text); font-weight: 600;
-                                     box-shadow: 0 1px 2px rgb(0 0 0 / .12); }
-  form { display: grid; gap: 14px; }
-  label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); }
-  input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--line);
-          background: var(--bg); color: var(--text); font: inherit; }
-  .submit { padding: 11px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent);
-            color: var(--accent-text); font: inherit; font-weight: 600; cursor: pointer; }
-  .submit:disabled { opacity: .6; cursor: default; }
-  .err { color: var(--bad); font-size: .9rem; min-height: 1.2em; margin: 0; }
-  .note { background: var(--note); border-radius: 8px; padding: 10px 12px; font-size: .85rem; color: var(--muted); margin-top: 16px; }
-  [hidden] { display: none !important; }
+  @keyframes glow { from { opacity: .7; transform: translateX(-50%) scale(.96); } to { opacity: 1; transform: translateX(-50%) scale(1.04); } }
+
+  main { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: max(28px, env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom)); }
+  .login { width: 100%; max-width: 420px; animation: fade-up .9s var(--ease) both; }
+  .hello { text-align: center; margin-bottom: 22px; }
+  .hello img { width: 64px; height: 64px; border-radius: 19px; box-shadow: 0 14px 34px -10px rgb(236 90 122 / .7); animation: pop .7s var(--spring) .1s both; }
+  .hello h1 { font-size: clamp(1.8rem, 7vw, 2.3rem); font-weight: 750; margin: 16px 0 6px; }
+  .hello p { color: var(--muted); margin: 0 auto; max-width: 32ch; }
+  .glass { background: var(--glass); backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5); }
+  .seg.tabs { display: grid; width: 100%; margin-bottom: 22px; }
+  .seg.tabs button { min-height: 44px; }
+  #confirm-row:not([hidden]) { animation: step-in .45s var(--ease) both; }
+  .foot { text-align: center; color: var(--muted); font-size: .8rem; margin: 18px 0 0; opacity: .85; }
 </style>
 </head>
 <body>
-<main>
-  <h1>Open Avona</h1>
-  <p class="sub">Compatible with popular Anova cookers. Sign in with your Anova account, the same one as in the Anova app.</p>
-  <div class="card">
-    <div class="tabs" role="tablist">
-      <button type="button" role="tab" id="tab-login" aria-selected="true">Sign in</button>
-      <button type="button" role="tab" id="tab-signup" aria-selected="false">Create account</button>
+<div class="scene" aria-hidden="true">
+  <div class="sun"></div>
+  <div class="sea">
+    <div class="layer rev" style="--c:#5b6cf0;--o:.5;--speed:22s;--bob:7s"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0 17Q75 2 150 17T300 17T450 17T600 17T750 17T900 17T1050 17T1200 17V34H0Z"/></svg><div></div></div>
+    <div class="layer" style="--c:#ec5a7a;--o:.5;--top:22px;--speed:15s;--bob:5.5s"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0 17Q150 0 300 17T600 17T900 17T1200 17V34H0Z"/></svg><div></div></div>
+    <div class="layer rev" style="--c:#f5793b;--o:.55;--top:46px;--speed:11s;--bob:6.5s"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0 17Q50 5 100 17T200 17T300 17T400 17T500 17T600 17T700 17T800 17T900 17T1000 17T1100 17T1200 17V34H0Z"/></svg><div></div></div>
+    <div class="bubbles">
+      <i style="--x:12%;--s:9px;--d:7s"></i><i style="--x:27%;--s:5px;--d:5.5s;--t:-2s"></i><i style="--x:41%;--s:7px;--d:8s;--t:-5s"></i>
+      <i style="--x:58%;--s:4px;--d:6s;--t:-1s"></i><i style="--x:69%;--s:8px;--d:7.5s;--t:-3.5s"></i><i style="--x:84%;--s:6px;--d:6.5s;--t:-4.5s"></i>
     </div>
-    <form id="form" novalidate>
-      <label>Email <input name="email" type="email" autocomplete="email" required></label>
-      <label>Password <input name="password" type="password" autocomplete="current-password" required minlength="6"></label>
-      <label id="confirm-row" hidden>Confirm password <input name="confirm" type="password" autocomplete="new-password"></label>
-      <p class="err" id="err" role="alert"></p>
-      <button class="submit" id="submit" type="submit">Sign in</button>
-    </form>
-    <p class="note" id="mock-note" hidden>Mock mode: nothing is sent to Anova. Demo account: demo@example.com / demo1234.</p>
-    <p class="note" id="signup-note" hidden>This creates a real Anova Culinary account. Accounts that use Google, Facebook or Apple sign-in have no password and can't sign in here.</p>
+  </div>
+</div>
+<main>
+  <div class="login">
+    <div class="hello">
+      <img src="/icon.svg" alt="">
+      <h1>Open Avona</h1>
+      <p>Compatible with popular Anova cookers. Sign in with your Anova account.</p>
+    </div>
+    <div class="card glass">
+      <div class="seg tabs" role="tablist" style="--n:2">
+        <span class="thumb"></span>
+        <button type="button" role="tab" id="tab-login" aria-selected="true">Sign in</button>
+        <button type="button" role="tab" id="tab-signup" aria-selected="false">Create account</button>
+      </div>
+      <form id="form" novalidate>
+        <label class="field"><span>Email</span><input class="input" name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+        <label class="field"><span>Password</span>
+          <span class="input-group"><input class="input" name="password" type="password" autocomplete="current-password" required minlength="6"><button type="button" class="reveal" data-for="password">Show</button></span></label>
+        <label class="field" id="confirm-row" hidden><span>Confirm password</span><input class="input" name="confirm" type="password" autocomplete="new-password"></label>
+        <p class="err" id="err" role="alert"></p>
+        <button class="btn btn-primary btn-block" id="submit" type="submit">Sign in</button>
+      </form>
+      <p class="note" id="mock-note" hidden>Mock mode: nothing is sent to Anova. Demo account: demo@example.com / demo1234.</p>
+      <p class="note" id="signup-note" hidden>This creates a real Anova Culinary account. Accounts that use Google, Facebook or Apple sign-in have no password and can't sign in here.</p>
+    </div>
+    <p class="foot">Unofficial and self-hosted. Not affiliated with Anova.</p>
   </div>
 </main>
 <script>
@@ -68,6 +82,7 @@ function setMode(m) {
   mode = m;
   document.getElementById('tab-login').setAttribute('aria-selected', m === 'login');
   document.getElementById('tab-signup').setAttribute('aria-selected', m === 'signup');
+  document.querySelector('.tabs').style.setProperty('--i', m === 'signup' ? 1 : 0);
   document.getElementById('confirm-row').hidden = m !== 'signup';
   document.getElementById('signup-note').hidden = m !== 'signup' || isMock;
   form.password.autocomplete = m === 'signup' ? 'new-password' : 'current-password';
@@ -76,6 +91,11 @@ function setMode(m) {
 }
 document.getElementById('tab-login').onclick = () => setMode('login');
 document.getElementById('tab-signup').onclick = () => setMode('signup');
+document.querySelector('.reveal').onclick = (e) => {
+  const pw = form.password;
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+  e.target.textContent = pw.type === 'password' ? 'Show' : 'Hide';
+};
 
 let isMock = false;
 fetch('/api/config').then((r) => r.json()).then((c) => {
@@ -94,6 +114,7 @@ form.addEventListener('submit', async (e) => {
     if (password !== form.confirm.value) return (err.textContent = 'Passwords do not match.');
   }
   submit.disabled = true;
+  submit.classList.add('busy');
   try {
     const r = await fetch(mode === 'signup' ? '/api/signup' : '/api/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
@@ -102,8 +123,8 @@ form.addEventListener('submit', async (e) => {
     location.href = '/';
   } catch (e2) {
     err.textContent = e2.message;
-  } finally {
     submit.disabled = false;
+    submit.classList.remove('busy');
   }
 });
 </script>

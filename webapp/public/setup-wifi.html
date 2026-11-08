@@ -2,87 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f0ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0c10" media="(prefers-color-scheme: dark)">
 <title>Wi‑Fi cooker setup · Open Avona</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/app.css">
 <style>
-  :root {
-    --bg: #f6f4f0; --card: #ffffff; --text: #1d1d1b; --muted: #6b6860; --line: #e2ded6;
-    --accent: #d2491f; --accent-text: #ffffff; --ok: #2e7d4f; --bad: #b3261e; --note: #fbefe2;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #161513; --card: #22201d; --text: #f2efe9; --muted: #a29d93; --line: #36332e;
-            --accent: #ff7a4d; --accent-text: #1a0d07; --ok: #6fcf97; --bad: #ff8a80; --note: #2d241c; }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-         font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 520px; margin: 0 auto; padding: 24px 16px 48px; }
-  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  header a { color: var(--muted); font-size: .9rem; }
-  h1 { font-size: 1.4rem; margin: 0; }
-  h2 { font-size: 1.15rem; margin: 0 0 8px; }
-  .steps { display: flex; gap: 6px; margin-bottom: 16px; }
-  .steps span { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
-  .steps span.done { background: var(--accent); }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
-  p { margin: 0 0 12px; }
-  .muted { color: var(--muted); font-size: .9rem; }
-  ol { margin: 0 0 14px; padding-left: 20px; }
-  ol li { margin-bottom: 6px; }
-  .btn { display: block; width: 100%; padding: 11px; border-radius: 8px; border: 1px solid var(--line);
-         background: var(--bg); color: var(--text); font: inherit; cursor: pointer; text-align: center; text-decoration: none; }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
-  .btn:disabled { opacity: .55; cursor: default; }
-  .btn + .btn { margin-top: 8px; }
-  .code-input { font-size: 2rem; letter-spacing: .4em; text-align: center; font-variant-numeric: tabular-nums; }
-  .nets { display: grid; gap: 6px; margin: 4px 0 14px; }
-  .nets button { text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line);
-                 background: var(--bg); color: var(--text); font: inherit; cursor: pointer; }
-  .nets button[aria-pressed=true] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
-  label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); margin-bottom: 12px; }
-  label.check { display: flex; gap: 8px; align-items: flex-start; font-size: .9rem; color: var(--text); }
-  label.check input { width: auto; margin-top: 3px; }
-  input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--line);
-          background: var(--bg); color: var(--text); font: inherit; }
-  .pw { display: grid; grid-template-columns: 1fr auto; gap: 6px; }
-  .pw button { padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg);
-               color: var(--muted); font: inherit; font-size: .85rem; cursor: pointer; }
-  .err { color: var(--bad); font-size: .9rem; min-height: 1.2em; margin: 0 0 10px; }
-  .note { background: var(--note); border-radius: 8px; padding: 10px 12px; font-size: .85rem; color: var(--muted); margin-top: 14px; }
-  .spinner { width: 28px; height: 28px; border: 3px solid var(--line); border-top-color: var(--accent);
-             border-radius: 50%; animation: spin 1s linear infinite; margin: 8px auto 16px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .success { color: var(--ok); font-weight: 600; }
-  code { font-size: .95em; }
-  [hidden] { display: none !important; }
+  body { --glow: rgb(91 108 240 / .16); }
+  .code-input { min-height: 76px; text-align: center; font: 700 2.4rem/1 var(--mono); letter-spacing: .4em; padding-left: calc(16px + .4em); }
+  .code-input::placeholder { color: var(--line-strong); }
+  .hotspot { margin: -4px 0 14px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); font-size: .9rem; color: var(--muted); }
 </style>
 </head>
 <body>
-<main>
-  <header><h1>Add a Wi‑Fi cooker</h1><a href="/">Back to my cookers</a></header>
-  <div class="steps" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+<header class="topbar" id="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/"><img src="/icon.svg" alt=""><span><b>Open</b> Avona</span></a>
+    <a class="back" href="/"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>My cookers</a>
+  </div>
+</header>
+<main class="wrap narrow">
+  <div class="page-head">
+    <h1>Add a Wi‑Fi cooker</h1>
+    <p>For the Precision Cooker Wi‑Fi (model AN500) and Pro Wi‑Fi.</p>
+  </div>
+  <div class="progress" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 
   <section class="card" data-step="code">
     <h2>Get the code from your cooker</h2>
-    <p class="muted">For the Precision Cooker Wi‑Fi (model AN500) and Pro Wi‑Fi. This also moves a cooker that is linked to an old account over to <b id="who">your account</b>.</p>
-    <ol>
+    <p class="muted">This also moves a cooker that is linked to an old account over to <b id="who">your account</b>.</p>
+    <ol class="list">
       <li>Plug the cooker in and keep it close to this computer.</li>
       <li>Press and hold the <b>target temperature</b> button on the cooker for <b>5 seconds</b>.</li>
       <li>A four-digit code appears on its display. Type it here.</li>
     </ol>
     <form id="code-form">
-      <label>Code on the cooker <input class="code-input" name="code" inputmode="numeric" maxlength="4" placeholder="0000" autocomplete="off" required></label>
+      <label class="field"><span>Code on the cooker</span><input class="input code-input" name="code" inputmode="numeric" maxlength="4" placeholder="0000" autocomplete="off" required></label>
       <label class="check"><input type="checkbox" name="auto" checked>
         <span>Switch this computer to the cooker's Wi‑Fi automatically. You'll be offline for about a minute and reconnected to <b id="prev-wifi">your Wi‑Fi</b> afterwards.</span></label>
-      <p class="muted" id="manual-hint" hidden>Connect this computer to the Wi‑Fi network <code id="hs-name">Anova ####</code>, password <code id="hs-pass">########</code>, then press Continue.</p>
+      <p class="hotspot" id="manual-hint" hidden>Connect this computer to the Wi‑Fi network <code id="hs-name">Anova ####</code>, password <code id="hs-pass">########</code>, then press Continue.</p>
       <p class="err" id="code-err" role="alert"></p>
-      <button class="btn primary" type="submit">Continue</button>
+      <button class="btn btn-primary btn-block" type="submit">Continue</button>
     </form>
     <p class="note" id="not-local" hidden>Open this page on the computer that runs the server (<code>http://localhost:8080/setup-wifi</code>). Setup has to switch that computer's Wi‑Fi.</p>
   </section>
 
-  <section class="card" data-step="working" hidden>
-    <div class="spinner"></div>
+  <section class="card center" data-step="working" hidden>
+    <div class="loader"><i></i><i></i><i></i></div>
     <h2 id="working-title">Connecting to your cooker</h2>
     <p class="muted" id="working-text"></p>
   </section>
@@ -92,26 +59,28 @@
     <p class="muted" id="scan-status">The cooker is looking for networks…</p>
     <div class="nets" id="nets"></div>
     <form id="wifi-form">
-      <label>Network name (2.4 GHz) <input name="ssid" autocomplete="off" autocapitalize="none" required></label>
-      <label>Password
-        <span class="pw"><input name="password" type="password" autocomplete="off"><button type="button" id="toggle-pw">Show</button></span>
+      <label class="field"><span>Network name (2.4 GHz)</span><input class="input" name="ssid" autocomplete="off" autocapitalize="none" required></label>
+      <label class="field"><span>Password</span>
+        <span class="input-group"><input class="input" name="password" type="password" autocomplete="off"><button type="button" class="reveal" id="toggle-pw">Show</button></span>
       </label>
       <p class="err" id="wifi-err" role="alert"></p>
-      <button class="btn primary" type="submit">Connect cooker</button>
-      <button class="btn" type="button" id="rescan">Scan again</button>
+      <button class="btn btn-primary btn-block" type="submit">Connect cooker</button>
+      <button class="btn btn-block" type="button" id="rescan">Scan again</button>
     </form>
   </section>
 
-  <section class="card" data-step="done" hidden>
-    <h2 class="success">Connected!</h2>
+  <section class="card center" data-step="done" hidden>
+    <svg class="success-mark" viewBox="0 0 84 84" aria-hidden="true"><circle class="disc" cx="42" cy="42" r="38"/><circle cx="42" cy="42" r="38"/><path d="M27 43l10 10 20-21"/></svg>
+    <h2>Connected!</h2>
     <p>Your cooker is on your Wi‑Fi and linked to <b id="done-who"></b>.</p>
-    <a class="btn primary" href="/">Start cooking</a>
+    <a class="btn btn-primary btn-block" href="/">Start cooking</a>
   </section>
 
-  <section class="card" data-step="error" hidden>
+  <section class="card center" data-step="error" hidden>
+    <div class="error-mark" aria-hidden="true">!</div>
     <h2>Setup didn't finish</h2>
     <p class="err" id="error-text"></p>
-    <button class="btn primary" id="restart">Start over</button>
+    <button class="btn btn-primary btn-block" id="restart">Start over</button>
   </section>
 </main>
 <script>
@@ -122,7 +91,7 @@ let me, deviceId = null, networks = [], selectedSecurity = null;
 function show(step) {
   document.querySelectorAll('[data-step]').forEach((el) => (el.hidden = el.dataset.step !== step));
   const i = ORDER.indexOf(step);
-  document.querySelectorAll('.steps span').forEach((el, j) => el.classList.toggle('done', i >= 0 && j < i));
+  document.querySelectorAll('.progress span').forEach((el, j) => el.classList.toggle('done', i >= 0 && j < i));
 }
 function working(title, text) {
   $('#working-title').textContent = title;
