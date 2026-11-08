@@ -84,7 +84,7 @@ obtain the APK yourself and follow the reproduction notes in `PROTOCOL.md`.
 
 ## Security and privacy
 
-- The server stores no passwords. It keeps each browser session's Firebase refresh token in memory only, so restarting it signs everyone out.
+- The server stores no passwords. It saves Firebase refresh tokens in `webapp/data/sessions.json` (or `SESSION_FILE`) with owner-only file permissions, so a restart keeps you signed in. Protect this file like a password. Sessions expire after 30 days without activity, or immediately when you sign out.
 - It listens on `127.0.0.1` by default, and the Compose file publishes it on localhost only. Before exposing it, put it behind HTTPS. Anyone who can reach it can sign in with *their own* Anova account.
 - Cooker Wi‑Fi setup changes the host's Wi‑Fi connection, so those endpoints only answer requests made directly from the host itself.
 - The Firebase API key and Android certificate fingerprint in `webapp/anova-cloud.mjs` are public values shipped inside every copy of the app. They are not secrets.

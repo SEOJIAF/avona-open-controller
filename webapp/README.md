@@ -29,7 +29,7 @@ docker build -t open-avona .
 ```
 
 ```bash
-docker run -d -p 127.0.0.1:8080:8080 open-avona
+docker run -d -p 127.0.0.1:8080:8080 -v anova-sessions:/app/data open-avona
 ```
 
 **Offline demo:** this simulates the accounts, the cloud, a cooker and Bluetooth, and never contacts Anova.
@@ -88,6 +88,7 @@ is cooking; any tap reconnects. Waking up takes a second or two, so the first co
 | `HOST` | `127.0.0.1` (`0.0.0.0` in Docker) | Listen address |
 | `TLS_CERT`, `TLS_KEY` | – | Serve HTTPS with this certificate and key |
 | `COOKIE_SECURE` | – | `1` marks the session cookie `Secure` when HTTPS is terminated by a proxy (automatic with `TLS_*`) |
+| `SESSION_FILE` | `webapp/data/sessions.json` | Private session file; mount its directory to retain sign-ins when replacing a container |
 | `ANOVA_FIREBASE_API_KEY` | key from the app | Override the Firebase web API key |
 | `CLOUD_IDLE_MINUTES` | `5` | Minutes without requests or an open dashboard before the server disconnects from Anova's cloud |
 | `ANOVA_WS_LOG` | – | File path; appends every raw cloud message, in both directions, for debugging. Tokens are not logged. |
@@ -106,7 +107,7 @@ is cooking; any tap reconnects. Waking up takes a second or two, so the first co
     ```
 
   After setup, the normal container controls the cooker over the cloud.
-- Sessions live in memory, so `docker compose restart` signs everyone out.
+- Compose stores sessions in the `anova-sessions` volume, so restarting or rebuilding the container keeps you signed in.
 
 ## Phones and HTTPS
 

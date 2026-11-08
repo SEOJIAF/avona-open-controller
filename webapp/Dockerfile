@@ -8,6 +8,7 @@ ENV NODE_ENV=production \
 WORKDIR /app
 COPY --chown=node:node package.json *.mjs ./
 COPY --chown=node:node public ./public
+RUN mkdir -m 700 /app/data && chown node:node /app/data
 
 USER node
 EXPOSE 8080

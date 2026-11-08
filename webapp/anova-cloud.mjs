@@ -48,8 +48,8 @@ export async function registerFirebaseTokenWithAnova(idToken, fetchImpl = fetch)
 
 // Firebase Auth over its public REST API. Mirrors what the Firebase SDK does inside the app.
 export class FirebaseAuth {
-  constructor({ apiKey = FIREBASE_API_KEY, email, password, refreshToken, fetchImpl = fetch } = {}) {
-    Object.assign(this, { apiKey, email, password, refreshToken, fetch: fetchImpl });
+  constructor({ apiKey = FIREBASE_API_KEY, email, password, refreshToken, fetchImpl = fetch, onTokenUpdate } = {}) {
+    Object.assign(this, { apiKey, email, password, refreshToken, fetch: fetchImpl, onTokenUpdate });
     this.idToken = null;
     this.expiresAt = 0;
   }
@@ -100,6 +100,7 @@ export class FirebaseAuth {
     this.idToken = idToken;
     this.refreshToken = refreshToken;
     this.expiresAt = Date.now() + Number(expiresIn) * 1000;
+    this.onTokenUpdate?.();
   }
 }
 
