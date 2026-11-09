@@ -2,6 +2,7 @@
 // Auth: Firebase ID token. Transport: wss://devices.anovaculinary.io with {command, requestId, payload} JSON.
 import { EventEmitter } from 'node:events';
 import { randomUUID } from 'node:crypto';
+import { createLogger, describeClose } from './log.mjs';
 
 // Public Firebase client config embedded in the APK (resources.arsc), not a secret.
 export const FIREBASE_API_KEY = 'AIzaSyCGJwHXUhkNBdPkH3OAkjc9-3xMMjvanfU';
@@ -108,7 +109,7 @@ export class FirebaseAuth {
 // The socket is opened on demand with wake() and closed with sleep(); while awake it reconnects on its own.
 export class AnovaCloud extends EventEmitter {
   // trace(direction, text) receives every raw message in and out, for debugging.
-  constructor({ auth, url = DEVICES_WS_URL, platform = 'android', connectSocket = (u) => new WebSocket(u), log = console, trace } = {}) {
+  constructor({ auth, url = DEVICES_WS_URL, platform = 'android', connectSocket = (u) => new WebSocket(u), log = createLogger('anova'), trace } = {}) {
     super();
     Object.assign(this, { auth, url, platform, connectSocket, log, trace });
     this.ws = null;
@@ -118,6 +119,7 @@ export class AnovaCloud extends EventEmitter {
     this.listed = false; // the cooker list has arrived on the current socket
     this.opening = null; // connect() still fetching a token
     this.retryTimer = null;
+    this.closeReasons = new WeakMap(); // socket -> why we closed it ourselves, for the log
   }
 
   get connected() {
@@ -139,28 +141,30 @@ export class AnovaCloud extends EventEmitter {
     const ws = this.connectSocket(url);
     this.ws = ws;
     ws.onopen = () => {
-      this.log.info?.('[anova] websocket connected');
+      this.log.info?.('cloud connected');
       this.emit('status', { connected: true });
     };
     ws.onmessage = (ev) => {
       this.trace?.('in', typeof ev.data === 'string' ? ev.data : `<${typeof ev.data}>`);
-      if (typeof ev.data !== 'string') return this.log.warn?.("[anova] message wasn't a string");
+      if (typeof ev.data !== 'string') return this.log.warn?.("cloud message wasn't a string");
       let msg;
       try {
         msg = JSON.parse(ev.data);
       } catch {
-        return this.log.warn?.('[anova] non-JSON message');
+        return this.log.warn?.('cloud sent a non-JSON message');
       }
       this.#processMessage(msg);
     };
     ws.onclose = (ev) => {
-      this.log.info?.(`[anova] websocket closed code=${ev?.code} reason=${ev?.reason ?? ''}`);
+      const reason = this.closeReasons.get(ws) ?? describeClose(ev?.code, ev?.reason);
+      const retry = this.stopped ? '' : `, reconnecting in ${RECONNECT_DELAY_MS / 1000} s`;
+      this.log.info?.(`cloud disconnected: ${reason} (code ${ev?.code ?? '?'})${retry}`);
       this.listed = false;
       this.emit('status', { connected: false });
       this.#failPending(new Error('Websocket connection is closed.'));
       if (!this.stopped) this.retryTimer = setTimeout(() => this.connect().catch((e) => this.#retryAfter(e)), RECONNECT_DELAY_MS);
     };
-    ws.onerror = (ev) => this.log.warn?.(`[anova] websocket error ${ev?.message ?? ''}`);
+    ws.onerror = (ev) => this.log.warn?.(`cloud socket error${ev?.message ? `: ${ev.message}` : ''}`);
   }
 
   // Connects unless already connected or connecting. Resolves once the cooker list has arrived, so commands
@@ -187,29 +191,38 @@ export class AnovaCloud extends EventEmitter {
   }
 
   // Disconnects until the next wake(). Cooker states go stale meanwhile, so they are dropped; names and types stay.
-  sleep() {
-    this.close();
+  sleep(reason = 'idle') {
+    this.close(reason);
     for (const d of this.devices.values()) {
       delete d.state;
       delete d.updatedAt;
     }
   }
 
-  close() {
+  close(reason = 'closed') {
     this.stopped = true;
     clearTimeout(this.retryTimer);
-    this.ws?.close();
+    this.#closeSocket(reason);
   }
 
   // After this computer changed networks, the old socket may hang silently; start a fresh one.
   reconnectNow() {
     if (this.stopped) return;
-    if (this.ws && this.ws.readyState <= 1) this.ws.close(); // onclose schedules the reconnect
-    else this.connect().catch((e) => this.log.error?.(`[anova] reconnect failed: ${e.message}`));
+    if (this.ws && this.ws.readyState <= 1) {
+      this.#closeSocket('network changed'); // onclose schedules the reconnect
+    } else {
+      this.connect().catch((e) => this.log.error?.(`cloud reconnect failed: ${e.message}`));
+    }
+  }
+
+  #closeSocket(reason) {
+    if (!this.ws) return;
+    if (this.ws.readyState <= 1) this.closeReasons.set(this.ws, reason);
+    this.ws.close();
   }
 
   #retryAfter(err) {
-    this.log.error?.(`[anova] reconnect failed: ${err.message}`);
+    this.log.error?.(`cloud reconnect failed: ${err.message}, retrying in ${(RECONNECT_DELAY_MS * 6) / 1000} s`);
     if (!this.stopped) this.retryTimer = setTimeout(() => this.connect().catch((e) => this.#retryAfter(e)), RECONNECT_DELAY_MS * 6);
   }
 
@@ -226,10 +239,12 @@ export class AnovaCloud extends EventEmitter {
         break;
       }
       case 'EVENT_APC_WIFI_ADDED':
+        this.log.info?.(`cooker ${payload?.cookerId} (${payload?.type ?? 'unknown type'}) added to the account`);
         this.#upsert(payload?.cookerId, { type: payload?.type, name: payload?.name });
         this.emit('devices', this.deviceList());
         break;
       case 'EVENT_APC_WIFI_REMOVED':
+        this.log.info?.(`cooker ${payload?.cookerId} removed from the account`);
         this.devices.delete(payload?.cookerId);
         this.emit('devices', this.deviceList());
         break;
