@@ -15,6 +15,7 @@ import { AnovaCloud, AuthError, FirebaseAuth, registerFirebaseTokenWithAnova } f
 import { MockAuth, addCooker, createMockSocket } from './mock-cloud.mjs';
 import { WifiSwitcher, configureCooker, getDeviceId, scanNetworks } from './gen2-setup.mjs';
 import { SessionStore } from './session-store.mjs';
+import { createLogger } from './log.mjs';
 
 const env = process.env;
 const PORT = Number(env.PORT ?? 8080);
@@ -25,9 +26,10 @@ const COOKIE = 'avona_sid';
 const SESSION_IDLE_MS = 30 * 24 * 3600_000;
 const CLOUD_IDLE_MS = Number(env.CLOUD_IDLE_MINUTES ?? 5) * 60_000;
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'public');
+const log = createLogger('server');
 const sessionStore = new SessionStore(env.SESSION_FILE ?? path.join(path.dirname(fileURLToPath(import.meta.url)), 'data', 'sessions.json'));
 
-// sid -> {email, auth, cloud, sse: Set<res>, lastSeen}.
+// sid -> {email, auth, cloud, log, sse: Set<res>, lastSeen}.
 const sessions = new Map();
 
 function savedSessions() {
@@ -37,7 +39,7 @@ function savedSessions() {
 }
 
 const persistSessions = () => sessionStore.save(savedSessions());
-const persistInBackground = () => { void persistSessions().catch((e) => console.error(`[anova] saving sessions failed: ${e.message}`)); };
+const persistInBackground = () => { void persistSessions().catch((e) => log.error(`saving sessions failed: ${e.message}`)); };
 
 function makeAuth(email, password) {
   return MOCK
@@ -51,10 +53,11 @@ const trace = env.ANOVA_WS_LOG
   : () => undefined;
 
 function startSession(email, auth, { sid = randomBytes(32).toString('base64url'), lastSeen = Date.now() } = {}) {
+  const userLog = createLogger(email);
   const cloud = MOCK
-    ? new AnovaCloud({ auth, connectSocket: createMockSocket, trace: trace(email) })
-    : new AnovaCloud({ auth, trace: trace(email) });
-  const session = { email, auth, cloud, sse: new Set(), lastSeen };
+    ? new AnovaCloud({ auth, connectSocket: createMockSocket, log: userLog, trace: trace(email) })
+    : new AnovaCloud({ auth, log: userLog, trace: trace(email) });
+  const session = { email, auth, cloud, log: userLog, sse: new Set(), lastSeen };
   const broadcast = (event, data) => {
     const chunk = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
     for (const res of session.sse) res.write(chunk);
@@ -70,25 +73,26 @@ function startSession(email, auth, { sid = randomBytes(32).toString('base64url')
 function connectSession(sid) {
   const s = sessions.get(sid);
   s.cloud.connect().catch((e) => {
-    console.error(`[anova] connect failed for ${s.email}: ${e.message}`);
+    s.log.error(`cloud connect failed: ${e.message}`);
     if (e instanceof AuthError) {
-      endSession(sid);
+      endSession(sid, 'the account rejected the saved sign-in');
       persistInBackground();
     }
   });
 }
 
-function endSession(sid) {
+function endSession(sid, reason) {
   const s = sessions.get(sid);
   if (!s) return;
-  s.cloud.close();
+  s.log.info(`session ended: ${reason}`);
+  s.cloud.close(reason);
   for (const res of s.sse) res.end();
   sessions.delete(sid);
 }
 
 setInterval(() => {
   let removed = false;
-  for (const [sid, s] of sessions) if (Date.now() - s.lastSeen > SESSION_IDLE_MS) { endSession(sid); removed = true; }
+  for (const [sid, s] of sessions) if (Date.now() - s.lastSeen > SESSION_IDLE_MS) { endSession(sid, 'expired, unused for 30 days'); removed = true; }
   if (removed) persistInBackground();
 }, 3600_000).unref();
 
@@ -97,8 +101,7 @@ setInterval(() => {
 setInterval(() => {
   for (const s of sessions.values()) {
     if (!s.cloud.stopped && !s.sse.size && Date.now() - s.lastSeen > CLOUD_IDLE_MS) {
-      console.log(`[anova] idle, disconnecting ${s.email}`);
-      s.cloud.sleep();
+      s.cloud.sleep(`idle, no page open for ${CLOUD_IDLE_MS / 60_000} min`);
     }
   }
 }, 15_000).unref();
@@ -163,12 +166,19 @@ function cookerUnreachable(err) {
 const gen2 = {
   async join(session, b) {
     session.gen2 ??= new WifiSwitcher();
-    if (b.auto !== false) await session.gen2.joinCookerHotspot(String(b.code ?? ''));
+    if (b.auto !== false) {
+      session.log.info(`Wi-Fi cooker setup: joining the cooker hotspot "Anova ${String(b.code ?? '')}"`);
+      await session.gen2.joinCookerHotspot(String(b.code ?? ''));
+    } else {
+      session.log.info('Wi-Fi cooker setup: looking for a cooker on the current network');
+    }
     // The app retries get-device-identity for up to 30 s while the connection settles.
     let lastErr;
     for (let i = 0; i < 30; i++) {
       try {
-        return { deviceId: await getDeviceId(), previousWifi: session.gen2.previousName };
+        const deviceId = await getDeviceId();
+        session.log.info(`Wi-Fi cooker setup: found cooker ${deviceId}`);
+        return { deviceId, previousWifi: session.gen2.previousName };
       } catch (err) {
         lastErr = err;
         await new Promise((r) => setTimeout(r, 1000));
@@ -186,16 +196,30 @@ const gen2 = {
     const password = String(b.password ?? '');
     const securityType = /^\d$/.test(String(b.securityType)) ? String(b.securityType) : password ? '2' : '0';
     await session.gen2?.ensureOnHotspot();
+    session.log.info(`Wi-Fi cooker setup: sending network "${b.ssid}" and pairing the cooker to account ${session.auth.uid}`);
     await configureCooker({ ssid: b.ssid, password, securityType, userId: session.auth.uid }).catch(cookerUnreachable);
+    session.log.info('Wi-Fi cooker setup: cooker configured, waiting for it to come online');
     await session.gen2?.restore();
     setTimeout(() => session.cloud.reconnectNow(), 3000);
     return { previousWifi: session.gen2?.previousName ?? null };
   },
   async cancel(session) {
+    session.log.info('Wi-Fi cooker setup: cancelled');
     await session.gen2?.restore();
     setTimeout(() => session.cloud.reconnectNow(), 3000);
     return {};
   },
+};
+
+// What each command did, for the log, e.g. "set temperature 56.5 °C".
+const temp = (b) => `${b.targetTemperature} °${unitOf(b.unit)}`;
+const minutes = (m) => `${Number(m ?? 0)} min`;
+const describeAction = {
+  start: (b) => `start cooking at ${temp(b)}${Number(b.timerMinutes) ? `, timer ${minutes(b.timerMinutes)}` : ''}`,
+  stop: () => 'stop cooking',
+  temperature: (b) => `set temperature ${temp(b)}`,
+  timer: (b) => `set timer ${minutes(b.timerMinutes)}`,
+  unit: (b) => `set unit °${unitOf(b.unit)}`,
 };
 
 const actions = {
@@ -218,6 +242,7 @@ async function login(req, res, { create }) {
     return send(res, 400, { ok: false, error: 'Email and password are required.' });
   }
   const auth = makeAuth(email.trim(), password);
+  const userLog = createLogger(email.trim());
   try {
     if (create) {
       await auth.signUp();
@@ -231,15 +256,17 @@ async function login(req, res, { create }) {
       await auth.signIn();
     }
   } catch (err) {
+    userLog.warn(`${create ? 'sign-up' : 'sign-in'} failed: ${err.message}`);
     return send(res, err instanceof AuthError ? 401 : 502, { ok: false, error: err.message });
   }
+  userLog.info(create ? `account created and signed in (uid ${auth.uid})` : `signed in (uid ${auth.uid})`);
   const old = sidOf(req);
-  if (old) endSession(old);
+  if (old) endSession(old, 'replaced by a new sign-in');
   const sid = startSession(email.trim(), auth);
   try {
     await persistSessions();
   } catch (err) {
-    endSession(sid);
+    endSession(sid, 'could not be saved');
     persistInBackground();
     return send(res, 500, { ok: false, error: `Could not save your session (${err.message}).` });
   }
@@ -285,7 +312,7 @@ const handler = async (req, res) => {
     const sid = sidOf(req);
     let session = sid && sessions.get(sid);
     if (session && Date.now() - session.lastSeen >= SESSION_IDLE_MS) {
-      endSession(sid);
+      endSession(sid, 'expired, unused for 30 days');
       await persistSessions();
       session = null;
     }
@@ -316,6 +343,7 @@ const handler = async (req, res) => {
         const result = await gen2[g[1]](session, await readJson(req));
         return send(res, 200, { ok: true, ...result });
       } catch (err) {
+        session.log.warn(`Wi-Fi cooker setup (${g[1]}) failed: ${err.message}`);
         return send(res, 400, { ok: false, error: err.message });
       }
     }
@@ -326,7 +354,7 @@ const handler = async (req, res) => {
       return send(res, 200, { ok: true });
     }
     if (req.method === 'POST' && url.pathname === '/api/logout') {
-      endSession(sid);
+      endSession(sid, 'signed out');
       await persistSessions();
       setCookie(res, '', 0);
       return send(res, 200, { ok: true });
@@ -349,7 +377,7 @@ const handler = async (req, res) => {
         session.lastSeen = Date.now(); // the idle countdown starts when the last page stops listening
       });
       wakeCloud(session).catch((e) => {
-        console.error(`[anova] connect failed for ${session.email}: ${e.message}`);
+        session.log.error(`cloud connect failed: ${e.message}`);
         if (session.sse.has(res)) res.write(`event: status\ndata: ${JSON.stringify({ connected: false, error: e.message, mock: MOCK })}\n\n`);
       });
       return;
@@ -357,9 +385,16 @@ const handler = async (req, res) => {
     const m = url.pathname.match(/^\/api\/devices\/([\w.-]+)\/(\w+)$/);
     if (req.method === 'POST' && m && Object.hasOwn(actions, m[2])) {
       const body = await readJson(req);
-      await wakeCloud(session);
-      const result = await actions[m[2]](cloud, m[1], body);
-      return send(res, 200, { ok: true, result });
+      const what = `cooker ${m[1]}: ${describeAction[m[2]](body)}`;
+      try {
+        await wakeCloud(session);
+        const result = await actions[m[2]](cloud, m[1], body);
+        session.log.info(`${what}: ok`);
+        return send(res, 200, { ok: true, result });
+      } catch (err) {
+        session.log.warn(`${what}: failed (${err.message})`);
+        throw err;
+      }
     }
     send(res, 404, { error: 'not found' });
   } catch (err) {
@@ -372,6 +407,7 @@ const server = TLS
   ? https.createServer({ cert: await readFile(env.TLS_CERT), key: await readFile(env.TLS_KEY) }, handler)
   : http.createServer(handler);
 
+let restored = 0;
 for (const record of await sessionStore.load()) {
   if (!record || !/^[A-Za-z0-9_-]{43}$/.test(record.sid) || typeof record.email !== 'string' ||
       typeof record.lastSeen !== 'number' || Date.now() - record.lastSeen >= SESSION_IDLE_MS ||
@@ -381,9 +417,11 @@ for (const record of await sessionStore.load()) {
     : new FirebaseAuth({ apiKey: env.ANOVA_FIREBASE_API_KEY, email: record.email, refreshToken: record.refreshToken });
   auth.uid = record.uid;
   startSession(record.email, auth, { sid: record.sid, lastSeen: record.lastSeen });
+  restored++;
 }
+if (restored) log.info(`restored ${restored} saved session${restored === 1 ? '' : 's'}: ${[...new Set([...sessions.values()].map((s) => s.email))].join(', ')}`);
 await persistSessions();
 server.listen(PORT, HOST, () => {
   const scheme = TLS ? 'https' : 'http';
-  console.log(`open-avona on ${scheme}://${HOST}:${PORT}${MOCK ? ' (MOCK mode, offline)' : ''}`);
+  log.info(`open-avona on ${scheme}://${HOST}:${PORT}${MOCK ? ' (MOCK mode, offline)' : ''}`);
 });

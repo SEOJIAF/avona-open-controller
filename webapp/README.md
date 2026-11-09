@@ -168,6 +168,17 @@ All routes except `/login`, `/api/login`, `/api/signup` and `/api/config` need t
 
 ## Troubleshooting
 
+The server logs one line per event to stdout/stderr (`docker compose logs -f`), tagged with the account's email:
+sign-ins, cloud connects and disconnects with their reason, every cooker command and whether it worked, Wi‑Fi
+setup steps and cookers added to or removed from the account. Passwords and tokens are never logged.
+
+```
+2026-11-09T15:23:26.132Z info  [you@example.com] signed in (uid 7462108984f629db2ced1aeb2dc3)
+2026-11-09T15:23:26.185Z info  [you@example.com] cloud connected
+2026-11-09T15:23:26.343Z info  [you@example.com] cooker mock-1: start cooking at 56.5 °C, timer 60 min: ok
+2026-11-09T15:28:40.151Z info  [you@example.com] cloud disconnected: idle, no page open for 5 min (code 1000)
+```
+
 - **The cooker's hotspot isn't found:** check the code on its display. A new code appears each time you hold the button. Keep the laptop close.
 - **"Lost contact with the cooker":** the computer left the cooker's Wi‑Fi. Usually the system network menu or a saved network took over. Start again from the code.
 - **"The cooker could not join that Wi‑Fi network":** wrong password, or a network that is 5 GHz-only. Guest networks often block devices from reaching the internet.
