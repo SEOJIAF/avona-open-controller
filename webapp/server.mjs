@@ -317,7 +317,7 @@ const handler = async (req, res) => {
       session = null;
     }
     if (!session) {
-      if (req.method === 'GET' && ['/', '/index.html', '/setup', '/setup-wifi'].includes(url.pathname)) {
+      if (req.method === 'GET' && ['/', '/index.html', '/setup', '/setup-wifi', '/setup-bluetooth'].includes(url.pathname)) {
         res.writeHead(302, { Location: '/login' });
         return res.end();
       }
@@ -331,6 +331,7 @@ const handler = async (req, res) => {
     if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) return await page(res, 'index.html');
     if (req.method === 'GET' && url.pathname === '/setup') return await page(res, 'setup.html');
     if (req.method === 'GET' && url.pathname === '/setup-wifi') return await page(res, 'setup-wifi.html');
+    if (req.method === 'GET' && url.pathname === '/setup-bluetooth') return await page(res, 'setup-bluetooth.html');
     if (req.method === 'GET' && url.pathname === '/api/gen2/info') {
       return send(res, 200, { local: isLocal(req), nmcli: await WifiSwitcher.available() });
     }
